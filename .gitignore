@@ -1,0 +1,10 @@
+.DS_Store
+db.sqlite3
+__pycache__
+*.pyc
+secrets.json
+static_cdn
+media_cdn
+media
+.coverage
+htmlcov

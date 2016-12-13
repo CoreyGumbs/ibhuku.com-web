@@ -1,5 +1,73 @@
 from __future__ import unicode_literals
-
+from django.conf import settings
 from django.db import models
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from .managers import UserManager
+
+
+def user_directory_path(instance, filename):
+	return 'useraccounts/user_%s/%s' % (instance.ibkuser.first_name, filename)
 
 # Create your models here.
+class IbkUser(AbstractBaseUser, PermissionsMixin):
+	email = models.EmailField(_('email address'),max_length=255, unique=True)
+	first_name = models.CharField(_('first name'), max_length=100, blank=True)
+	last_name = models.CharField(_('last name'), max_length=100, blank=True)
+	date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
+	last_login = models.DateTimeField(_('last login'), auto_now=True)
+	is_active =  models.BooleanField(_('active'), default=True)
+	is_staff = models.BooleanField(_('staff'), default=False)
+
+	objects = UserManager()
+
+	USERNAME_FIELD = 'email'
+	REQUIRED_FIELDS = ['first_name']
+
+	class META:
+		db_table = 'user_accounts'
+		verbose_name = _('user')
+		verbose_name_plural = _('users') 
+
+	def get_full_name(self):
+		full_name = '{0} {1}'.format(self.first_name, self.last_name)
+		return full_name.strip()
+
+	def get_short_name(self):
+		return self.first_name
+
+	def __unicode__(self):
+		return self.email
+
+	def __str__(self):
+		return self.email
+
+class Profile(models.Model):
+	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+	bio =  models.TextField(_('bio'),max_length=500, blank=True)
+	location = models.CharField(_('location'), max_length=50, blank=True)
+	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
+
+	class META:
+		db_table = 'user_profiles'
+		verbose_name = _('profile')
+		verbose_name_plural = _('profiles')
+
+	def __unicode__(self):
+		return self.ibkuser.email
+
+	def __str__(self):
+		return self.ibkuser.email
+
+@receiver(post_save, sender=IbkUser)
+def create_user_profile(sender, instance, created, **kwargs):
+	if created:
+		Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=IbkUser)
+def save_user_profile(sender, instance, created, **kwargs):
+	instance.profile.save()

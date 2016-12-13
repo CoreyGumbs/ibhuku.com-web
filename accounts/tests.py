@@ -1,5 +1,5 @@
 from django.core.urlresolvers import resolve
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 
@@ -8,7 +8,6 @@ from accounts.views import index
 
 
 # Create your tests here.
-
 #Model Test for IbkUser account information is actually in database/model
 class IbkUserAccountTest(TestCase):
 	@classmethod

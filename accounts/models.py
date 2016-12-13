@@ -11,7 +11,7 @@ from .managers import UserManager
 
 
 def user_directory_path(instance, filename):
-	return 'useraccounts/user_%s/%s' % (instance.ibkuser.first_name, filename)
+	return 'useraccounts/user_%s/%s' % (instance.ibkuser.get_short_name(), filename)
 
 # Create your models here.
 class IbkUser(AbstractBaseUser, PermissionsMixin):
@@ -26,9 +26,9 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 	objects = UserManager()
 
 	USERNAME_FIELD = 'email'
-	REQUIRED_FIELDS = ['first_name']
+	REQUIRED_FIELDS = ['first_name','last_name']
 
-	class META:
+	class Meta:
 		db_table = 'user_accounts'
 		verbose_name = _('user')
 		verbose_name_plural = _('users') 
@@ -38,13 +38,13 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 		return full_name.strip()
 
 	def get_short_name(self):
-		return self.first_name
+		return self.first_name + ' ' + self.last_name[0] + '.'
 
 	def __unicode__(self):
-		return self.email
+		return self.get_short_name()
 
 	def __str__(self):
-		return self.email
+		return self.get_short_name()
 
 class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -52,22 +52,13 @@ class Profile(models.Model):
 	location = models.CharField(_('location'), max_length=50, blank=True)
 	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
 
-	class META:
+	class Meta:
 		db_table = 'user_profiles'
 		verbose_name = _('profile')
 		verbose_name_plural = _('profiles')
 
 	def __unicode__(self):
-		return self.ibkuser.email
+		return self.user.get_full_name()
 
 	def __str__(self):
-		return self.ibkuser.email
-
-@receiver(post_save, sender=IbkUser)
-def create_user_profile(sender, instance, created, **kwargs):
-	if created:
-		Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=IbkUser)
-def save_user_profile(sender, instance, created, **kwargs):
-	instance.profile.save()
+		return self.user.get_full_name()

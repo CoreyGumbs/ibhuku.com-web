@@ -38,7 +38,8 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 		return full_name.strip()
 
 	def get_short_name(self):
-		return self.first_name + ' ' + self.last_name[0] + '.'
+		short_name = '{0} {1}'.format(self.first_name, self.last_name[0])
+		return short_name
 
 	def __unicode__(self):
 		return self.get_short_name()

@@ -1,9 +1,9 @@
 from django.core.urlresolvers import resolve
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 
-from accounts.models import IbkUser
+from accounts.models import IbkUser, Profile
 from accounts.views import index
 
 
@@ -11,48 +11,45 @@ from accounts.views import index
 
 #Model Test for IbkUser account information is actually in database/model
 class IbkUserAccountTest(TestCase):
-	def setUp(self):
-		IbkUser.objects.create(email = "mctest@test.com", first_name="McTest", password="12345")
+	@classmethod
+	def setUpTestData(cls):
+		cls.user = IbkUser.objects.create(email = "mctest@test.com", first_name="McTest", last_name="McTesty", password="12345")
 
 	def test_string_representation(self):
-		name = IbkUser(first_name='McTest')
-		self.assertEqual('McTest', name.first_name )
+		self.assertEqual('McTest', self.user.first_name )
 
 	def test_IbkUser_email_created(self):
-		name = IbkUser.objects.get(first_name="McTest")
-		self.assertIn('mctest@test.com', name.email)
+		self.assertIn('mctest@test.com', self.user.email)
 
 	def test_IbkUser_date_joined(self):
-		name = IbkUser.objects.get(first_name="McTest")
-		self.assertTrue(name.date_joined, True)
+		self.assertTrue(self.user.date_joined, True)
 
 	def test_verbose_name_plural(self):
-		self.assertEqual(str(IbkUser._meta.verbose_name_plural), 'ibk users')
+		self.assertEqual(str(self.user._meta.verbose_name_plural), 'users')
 
 	def test_get_full_name(self):
-		name = IbkUser(first_name='admin')
-		self.assertEqual('admin', name.get_full_name())
+		self.assertEqual('McTest McTesty', self.user.get_full_name())
 
 	def test_get_short_name(self):
-		name = IbkUser(first_name='admin')
-		self.assertEqual('admin', name.get_short_name())
+		self.assertEqual('McTest M', self.user.get_short_name())
 
 #IbkUser Profile creations Test
 class IbkUserProfileCreated(TestCase):
-	def setUp(self):
-		IbkUser.objects.create(email = "mctest@test.com", first_name="McTest", password="12345")
+	@classmethod 
+	def setUpTestData(cls):
+		cls.user = IbkUser.objects.create(email = "mctest@test.com", first_name="McTest", last_name="McTesty", password="12345")
+		cls.profile = Profile.objects.create(user_id=cls.user.id)
 
 	def test_IbkUser_creation(self):
-		name = IbkUser.objects.get(first_name="McTest")
-		self.assertIn('mctest@test.com', name.email)
+		self.assertIn('mctest@test.com', self.user.email)
 
 	def test_profile_creation(self):
-		name = IbkUser.objects.get(first_name="McTest")
-		name.profile.bio = 'test this profile'
-		name.profile.location = 'new york'
-		name.save()
-		self.assertEqual('test this profile', name.profile.bio)
-		self.assertEqual('new york', name.profile.location)
+	 	self.profile.bio = "This is McTest McTesty's accounts"
+	 	self.profile.location = "New York"
+	 	self.profile.save()
+	 	self.assertEqual(self.profile.user.first_name, 'McTest')
+	 	self.assertEqual("This is McTest McTesty's accounts", self.user.profile.bio)
+	 	self.assertEqual("New York", self.user.profile.location)
 		
 #Test to see if app url '../accounts/' is responding
 class IbkUserAccountsIndexPageTest(TestCase):

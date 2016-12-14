@@ -1,10 +1,11 @@
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.http import HttpRequest
 from selenium import webdriver
 
 from accounts.models import IbkUser, Profile
-from accounts.views import index
+from accounts.views import index, registration
 
 
 # Create your tests here.
@@ -56,9 +57,22 @@ class IbkUserAccountsIndexPageTest(TestCase):
 		response = self.client.get('/accounts/')
 		self.assertEqual(response.status_code, 200)
 
-	def test_resolve_root_url_resolves_to_index_view(self):
-		found = resolve('/accounts/')
-		self.assertEqual(found.func, index)
+	def test_uses_index_template(self):
+		response = self.client.get('/accounts/')
+		self.assertTemplateUsed(response, 'accounts/index.html')
+
+	def test_index_page_returns_correct_html(self):
+		response = self.client.get('/accounts/')
+		html = response.content.decode('utf8')
+		self.assertTrue(html.startswith('<!DOCTYPE html>'))
+		self.assertIn('<title>Accounts</title>', html)
+		self.assertTrue(html.endswith('</html>'))
+		self.assertTemplateUsed(response, 'accounts/index.html')
+
+# class IbhukuRegistrationPageTest(TestCase):
+# 	def test_registration_page_status_code(self):
+# 		response = self.client.get('/accounts/register/')
+# 		self.assertEqual(response.status_code, 200)
 
 
 #Browser Test to check for '/accounts/' url and index page title html

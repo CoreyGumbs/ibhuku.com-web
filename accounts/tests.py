@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from selenium import webdriver
 
 from accounts.models import IbkUser, Profile
-from accounts.views import index, registration
+from accounts.views import AccountsIndex, AccountSignUp
 
 
 # Create your tests here.
@@ -53,13 +53,13 @@ class IbkUserProfileCreated(TestCase):
 		
 #Test to see if app url '../accounts/' is responding
 class IbkUserAccountsIndexPageTest(TestCase):
-	def test_root_url_status_code_to_index_page_view(self):
+	def test_account_page_status_code_to_index_page_view(self):
 		response = self.client.get('/accounts/')
 		self.assertEqual(response.status_code, 200)
 
-	def test_uses_index_template(self):
+	def test_index_view_uses_index_template(self):
 		response = self.client.get('/accounts/')
-		self.assertTemplateUsed(response, 'accounts/index.html')
+		self.assertTemplateUsed(response, 'accounts/base.html')
 
 	def test_index_page_returns_correct_html(self):
 		response = self.client.get('/accounts/')
@@ -67,12 +67,24 @@ class IbkUserAccountsIndexPageTest(TestCase):
 		self.assertTrue(html.startswith('<!DOCTYPE html>'))
 		self.assertIn('<title>Accounts</title>', html)
 		self.assertTrue(html.endswith('</html>'))
-		self.assertTemplateUsed(response, 'accounts/index.html')
+		self.assertTemplateUsed(response, 'accounts/base.html')
 
-# class IbhukuRegistrationPageTest(TestCase):
-# 	def test_registration_page_status_code(self):
-# 		response = self.client.get('/accounts/register/')
-# 		self.assertEqual(response.status_code, 200)
+#Test of Accounts Registrations Views/URLs
+class IbhukuRegistrationPageTest(TestCase):
+	def test_sign_up_page_status_code(self):
+		response = self.client.get('/accounts/sign-up/')
+		self.assertEqual(response.status_code, 200)
+
+	def test_sign_up_view_uses_sign_up_template(self):
+		response = self.client.get('/accounts/sign-up/')
+		self.assertTemplateUsed(response, 'accounts/registration.html')
+
+	def test_registration_page_returns_correct_html(self):
+		response = self.client.get('/accounts/sign-up/')
+		html = response.content.decode('utf8')
+		self.assertTrue(html.startswith('<!DOCTYPE html>'), html)
+		self.assertIn('<title>Sign-Up!</title>', html)
+
 
 
 #Browser Test to check for '/accounts/' url and index page title html

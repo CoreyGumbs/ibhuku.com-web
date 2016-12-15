@@ -1,9 +1,9 @@
 from django.conf.urls import include, url
-from django.contrib.auth import views as auth_views
+from django.views.generic.edit import CreateView
 
-from . import views
+from accounts.views import AccountsIndex, AccountSignUp
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    #url(r'^login/$',auth_views.login, name='login'),
-]
+    url(r'^$', AccountsIndex.as_view(), name='index'),
+    url(r'sign-up/$', AccountSignUp.as_view(), name='sign-up'),
+ ]

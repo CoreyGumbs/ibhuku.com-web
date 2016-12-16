@@ -10,6 +10,13 @@
 		{%endblock account_css%}
 	</head>
 	<body>
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a href="{% url 'accounts:index' %}" class="navbar-brand"> <img src="{%static 'images/brand_flwr.png' %}" width=30 height=30 alt="Ibhuku Flower Logo"></a>
+				</div>
+			</div>
+		</nav>
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-8 col-lg-offset-4">

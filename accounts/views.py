@@ -11,6 +11,6 @@ class AccountsIndex(TemplateView):
 	template_name = 'accounts/base.html'
 
 class AccountSignUp(CreateView):
-	form_class = UserCreationForm
 	model = IbkUser
-	template_name = 'accounts/registration.html'
+	fields = ('first_name', 'last_name', 'email', 'password')
+	template_name = 'accounts/signup_form.html'

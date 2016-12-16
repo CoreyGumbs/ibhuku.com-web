@@ -1,10 +1,23 @@
+{%load staticfiles%}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Accounts</title>
-</head>
-<body>
-	<h1>This is the index</h1>
-</body>
+	<head>
+		<meta charset="UTF-8">
+		<title>{%block account_title%}Accounts{%endblock account_title%}</title>
+		<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+		{%block account_css%}
+
+		{%endblock account_css%}
+	</head>
+	<body>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-4">
+					{% block account_body %}
+						<h1>This is the index</h1>
+					{% endblock account_body %}
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

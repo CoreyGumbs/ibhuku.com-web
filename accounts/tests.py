@@ -64,9 +64,7 @@ class IbkUserAccountsIndexPageTest(TestCase):
 	def test_index_page_returns_correct_html(self):
 		response = self.client.get('/accounts/')
 		html = response.content.decode('utf8')
-		self.assertTrue(html.startswith('<!DOCTYPE html>'))
 		self.assertIn('<title>Accounts</title>', html)
-		self.assertTrue(html.endswith('</html>'))
 		self.assertTemplateUsed(response, 'accounts/base.html')
 
 #Test of Accounts Registrations Views/URLs
@@ -77,13 +75,13 @@ class IbhukuRegistrationPageTest(TestCase):
 
 	def test_sign_up_view_uses_sign_up_template(self):
 		response = self.client.get('/accounts/sign-up/')
-		self.assertTemplateUsed(response, 'accounts/registration.html')
+		self.assertTemplateUsed(response, 'accounts/signup_form.html')
 
 	def test_registration_page_returns_correct_html(self):
 		response = self.client.get('/accounts/sign-up/')
 		html = response.content.decode('utf8')
-		self.assertTrue(html.startswith('<!DOCTYPE html>'), html)
 		self.assertIn('<title>Sign-Up!</title>', html)
+		self.assertIn('submit', html)
 
 
 

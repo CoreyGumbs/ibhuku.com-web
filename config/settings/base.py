@@ -20,7 +20,6 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
 security_key = os.path.join(BASE_DIR, 'secrets.json')
@@ -48,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
     'accounts',
 ]
 
@@ -121,3 +121,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

@@ -70,15 +70,15 @@ class IbkUserAccountsIndexPageTest(TestCase):
 #Test of Accounts Registrations Views/URLs
 class IbhukuRegistrationPageTest(TestCase):
 	def test_sign_up_page_status_code(self):
-		response = self.client.get('/accounts/sign-up/')
+		response = self.client.get('/accounts/register/')
 		self.assertEqual(response.status_code, 200)
 
 	def test_sign_up_view_uses_sign_up_template(self):
-		response = self.client.get('/accounts/sign-up/')
+		response = self.client.get('/accounts/register/')
 		self.assertTemplateUsed(response, 'accounts/signup_form.html')
 
 	def test_registration_page_returns_correct_html(self):
-		response = self.client.get('/accounts/sign-up/')
+		response = self.client.get('/accounts/register/')
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
@@ -100,6 +100,51 @@ class AccountsUrlTest(StaticLiveServerTestCase):
 	def test_get_accounts_url(self):
 		self.browser.get('http://localhost:8000/accounts/')
 		self.assertIn("Accounts", self.browser.title)
+
+class IbkUserSignUpTest(StaticLiveServerTestCase):
+	#set up selenium/browser
+	def setUp(self):
+		#ChromeDriver
+		self.browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+		self.browser.implicitly_wait(10)
+
+	#tear down browser after testing
+	def tearDown(self):
+		self.browser.quit()
+
+	def test_user_signup_creation(self):
+		self.browser.get('http://localhost:8000/accounts/register/')
+		self.assertIn('Sign-Up', self.browser.title)
+		
+		first_name_input = self.browser.find_element_by_id("signup_first_name")
+		self.assertEqual(first_name_input.get_attribute('placeholder'), 'First Name')
+
+		last_name_input = self.browser.find_element_by_id("signup_last_name")
+		self.assertEqual(last_name_input.get_attribute('placeholder'), 'Last Name')
+
+		email_input = self.browser.find_element_by_id("signup_email")
+		self.assertEqual(email_input.get_attribute('placeholder'), 'Enter Email')
+
+		password_input = self.browser.find_element_by_id("signup_password")
+		self.assertEqual(password_input.get_attribute('placeholder'), ' Enter Password')
+
+		confirm_password_input = self.browser.find_element_by_id("confirm_signup_password")
+		self.assertEqual(confirm_password_input.get_attribute('placeholder'), 'Confirm Password')
+
+		first_name_input.send_keys('Corey')
+		last_name_input.send_keys('Gumbs')
+		email_input.send_keys('test@testing.com')
+		password_input.send_keys('password123')
+		confirm_password_input.send_keys('password123')
+
+		#He submits his information to register his account
+		self.browser.find_element_by_id("signup_submit").submit()
+
+	def test_check_redirect(self):
+		self.browser.get('http://localhost:8000/accounts/')
+		self.assertIn('Accounts', self.browser.title)
+
 		import time
-		time.sleep(5)
+		time.sleep(6)
+
 

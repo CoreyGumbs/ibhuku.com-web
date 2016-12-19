@@ -121,7 +121,7 @@ class AccountsSignUpTest(StaticLiveServerTestCase):
 		self.assertEqual(email_input.get_attribute('placeholder'), 'Email')
 		self.assertEqual(password_input.get_attribute('placeholder'), 'Password')
 
-		name_input.send_keys('Corey')
+		name_input.send_keys('Testy McTesty')
 		email_input.send_keys('test@testing.com')
 		password_input.send_keys('password123')
 

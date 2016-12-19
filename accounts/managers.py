@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
 
 class UserManager(BaseUserManager):
 	use_in_migrations = True

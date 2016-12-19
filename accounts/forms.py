@@ -1,23 +1,44 @@
+import random
 from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.hashers import make_password
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Fieldset, Submit, Button, Reset
+from crispy_forms.bootstrap import FormActions, PrependedText
 
 from .models import IbkUser
 
 
 class IbkUserSignUpForm(ModelForm):
-	password2 = forms.CharField(label=_("Confirm Password"),widget=forms.PasswordInput(attrs={ 'type': 'password','id': 'confirm_signup_password', 'name': 'confirm_signup_password','required': True, 'placeholder': 'Confirm Password'}))
 	
 	class Meta:
 		model = IbkUser
-		fields = ('first_name', 'last_name', 'email', 'password', 'password2')
-		fields_required = ('first_name', 'last_name',)
+		fields = ('name', 'email', 'password')
+		fields_required = ('name')
 		widgets = {
-			'first_name': forms.TextInput(attrs={'id': 'signup_first_name', 'placeholder': 'First Name', 'required': True}),
-			'last_name': forms.TextInput(attrs={'id': 'signup_last_name', 'placeholder': 'Last Name', 'required': True}),
-			'email': forms.EmailInput(attrs={'id': 'signup_email', 'placeholder': 'Enter Email'}),
+			'name': forms.TextInput(attrs={'id': 'signup_name'}),
+			'email': forms.EmailInput(attrs={'id': 'signup_email'}),
 			'password': forms.PasswordInput(attrs={'id': 'signup_password', 'placeholder': ' Enter Password'})
 		}
 
+	def clean_password(self):
+		password = self.cleaned_data.get('password')
+		password_hashed =  make_password(password, salt=random.random())
+		return password_hashed
 
+	def __init__(self, *args, **kwargs):
+		super(IbkUserSignUpForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_id = 'registerForm'
+		self.helper.form_method = 'post'
+		self.helper.layout = Layout(
+				PrependedText('name', "<span class='glyphicon glyphicon-user'></span>", placeholder="Name", active=True),
+				PrependedText('email', "<span class='glyphicon glyphicon-envelope'></span>", placeholder="Email", active=True),
+				PrependedText('password', "<span class='glyphicon glyphicon-lock'></span>", placeholder="Password", active=True),
+				FormActions(
+					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
+					),
+			)
 

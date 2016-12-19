@@ -16,8 +16,8 @@ def user_directory_path(instance, filename):
 # Create your models here.
 class IbkUser(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(_('email address'),max_length=255, unique=True)
-	first_name = models.CharField(_('first name'), max_length=100, blank=True)
-	last_name = models.CharField(_('last name'), max_length=100, blank=True)
+	name = models.CharField(_('name'), max_length=100, blank=False)
+	username = models.CharField(_('username'), max_length=100, blank=True)
 	date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
 	last_login = models.DateTimeField(_('last login'), auto_now=True)
 	is_active =  models.BooleanField(_('active'), default=True)
@@ -26,7 +26,7 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 	objects = UserManager()
 
 	USERNAME_FIELD = 'email'
-	REQUIRED_FIELDS = ['first_name','last_name']
+	REQUIRED_FIELDS = ['name']
 
 	class Meta:
 		db_table = 'user_accounts'
@@ -34,18 +34,28 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 		verbose_name_plural = _('users') 
 
 	def get_full_name(self):
-		full_name = '{0} {1}'.format(self.first_name, self.last_name)
-		return full_name.strip()
+		if self.username:
+			return self.username
+		else:
+			return self.name
 
 	def get_short_name(self):
-		short_name = '{0} {1}'.format(self.first_name, self.last_name[0])
-		return short_name
+		if self.username:
+			return self.username
+		else:
+			return self.name
 
 	def __unicode__(self):
-		return self.get_short_name()
+		if self.username:
+			return self.username
+		else:
+			return self.name
 
 	def __str__(self):
-		return self.get_short_name()
+		if self.username:
+			return self.username
+		else:
+			return self.name
 
 class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

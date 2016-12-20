@@ -15,7 +15,7 @@ def user_directory_path(instance, filename):
 
 # Create your models here.
 class IbkUser(AbstractBaseUser, PermissionsMixin):
-	email = models.EmailField(_('email address'),max_length=255, unique=True)
+	email = models.EmailField(_('email'),max_length=255, unique=True)
 	name = models.CharField(_('name'), max_length=100, blank=False)
 	username = models.CharField(_('username'), max_length=100, blank=True)
 	date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
@@ -61,7 +61,7 @@ class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	bio =  models.TextField(_('bio'),max_length=500, blank=True)
 	location = models.CharField(_('location'), max_length=50, blank=True)
-	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True)
+	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True) 
 
 	class Meta:
 		db_table = 'user_profiles'
@@ -73,3 +73,12 @@ class Profile(models.Model):
 
 	def __str__(self):
 		return self.user.get_full_name()
+
+@receiver(post_save, sender=IbkUser)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=IbkUser)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()

@@ -1,8 +1,11 @@
-import random
+import hashlib
+import os
+
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpRequest
 
 from selenium import webdriver
@@ -16,15 +19,15 @@ from accounts.views import AccountsIndex, AccountSignUp
 class IbkUserAccountTest(TestCase):
 	@classmethod
 	def setUpTestData(cls):
-		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="12345")
+		cls.user = IbkUser.objects.create(id=1, email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="12345")
 
 	def test_string_representation(self):
 		self.assertEqual('McTest McTesty', self.user.name )
 
-	def test_IbkUser_email_created(self):
+	def test_user_email_created(self):
 		self.assertIn('mctest@test.com', self.user.email)
 
-	def test_IbkUser_date_joined(self):
+	def test_user_date_joined(self):
 		self.assertTrue(self.user.date_joined, True)
 
 	def test_verbose_name_plural(self):
@@ -36,29 +39,30 @@ class IbkUserAccountTest(TestCase):
 	def test_get_short_name(self):
 		self.assertEqual('McTestyRocks', self.user.get_short_name())
 
-	def test_password_hash(self):
-		password = make_password(self.user.password)
+	def test_user_password_hashing(self):
+		password = make_password(self.user.password, salt=hashlib.sha1(os.urandom(16)).hexdigest())
 		check = check_password(password, self.user.password)
 		self.assertTrue(True , check)
+
 
 #IbkUser Profile creations Test
 class IbkUserProfileCreated(TestCase):
 	@classmethod 
 	def setUpTestData(cls):
-		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="12345")
-		cls.profile = Profile.objects.create(user_id=cls.user.id)
+		cls.user = IbkUser.objects.create(email = "johndoe@test.com", name="John Doe", username="JohnnyBread", password="12345")
+		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
-	def test_IbkUser_creation(self):
-		self.assertIn('mctest@test.com', self.user.email)
+	def test_user_creation(self):
+		self.assertIn('johndoe@test.com', self.user.email)
 
-	def test_profile_creation(self):
-	 	self.profile.bio = "This is McTest McTesty's accounts"
+	def test_user_profile_creation(self):
+	 	self.profile.bio = "This is John Does's accounts"
 	 	self.profile.location = "New York"
 	 	self.profile.save()
-	 	self.assertEqual(self.profile.user.name, 'McTest McTesty')
-	 	self.assertEqual(self.profile.user.username, 'McTestyRocks')
-	 	self.assertEqual("This is McTest McTesty's accounts", self.user.profile.bio)
-	 	self.assertEqual("New York", self.user.profile.location)
+	 	self.assertEqual(self.profile.user.name, 'John Doe')
+	 	self.assertEqual(self.profile.user.username, 'JohnnyBread')
+	 	self.assertEqual("This is John Does's accounts", self.profile.bio)
+	 	self.assertEqual("New York", self.profile.location)
 		
 #Test to see if app url '../accounts/' is responding
 class IbkUserAccountsIndexPageTest(TestCase):
@@ -91,6 +95,7 @@ class IbhukuRegistrationPageTest(TestCase):
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
+
 
 
 #Browser Test to check for '/accounts/' url and index page title html

@@ -1,4 +1,5 @@
-import random
+import hashlib
+import os
 from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -25,7 +26,7 @@ class IbkUserSignUpForm(ModelForm):
 
 	def clean_password(self):
 		password = self.cleaned_data.get('password')
-		password_hashed =  make_password(password, salt=random.random())
+		password_hashed =  make_password(password, salt=hashlib.sha1(os.urandom(16)).hexdigest())
 		return password_hashed
 
 	def __init__(self, *args, **kwargs):

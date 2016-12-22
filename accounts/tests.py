@@ -3,7 +3,7 @@ import os
 
 from django.core.urlresolvers import resolve
 from django.test import TestCase
-from django.contrib.auth.hashers import make_password, check_password
+from django.core.signing import Signer, TimestampSigner
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpRequest
@@ -44,7 +44,6 @@ class IbkUserAccountTest(TestCase):
 		check = check_password(password, self.user.password)
 		self.assertTrue(True , check)
 
-
 #IbkUser Profile creations Test
 class IbkUserProfileCreated(TestCase):
 	@classmethod 
@@ -63,6 +62,12 @@ class IbkUserProfileCreated(TestCase):
 	 	self.assertEqual(self.profile.user.username, 'JohnnyBread')
 	 	self.assertEqual("This is John Does's accounts", self.profile.bio)
 	 	self.assertEqual("New York", self.profile.location)
+
+	def test_account_validation_key_hashing(self):
+		signer = Signer()
+		key_value = signer.sign(self.profile.user.email)
+		key = ''.join(key_value.split(':')[1:])
+		self.assertEqual(self.profile.user.email, signer.unsign('{0}:{1}'.format(self.profile.user.email, key)))
 		
 #Test to see if app url '../accounts/' is responding
 class IbkUserAccountsIndexPageTest(TestCase):
@@ -95,8 +100,6 @@ class IbhukuRegistrationPageTest(TestCase):
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
-
-
 
 #Browser Test to check for '/accounts/' url and index page title html
 class AccountsSignUpTest(StaticLiveServerTestCase):

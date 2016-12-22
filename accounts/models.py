@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
@@ -62,6 +63,8 @@ class Profile(models.Model):
 	bio =  models.TextField(_('bio'),max_length=500, blank=True)
 	location = models.CharField(_('location'), max_length=50, blank=True)
 	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True) 
+	verified = models.BooleanField(_('verified'), default=False)
+	verify_key = models.CharField(_('key'), max_length=250, blank=False)
 
 	class Meta:
 		db_table = 'user_profiles'

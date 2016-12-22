@@ -6,4 +6,5 @@ from accounts.views import AccountsIndex, AccountSignUp
 urlpatterns = [
     url(r'^$', AccountsIndex.as_view(), name='index'),
     url(r'register/$', AccountSignUp.as_view(), name='sign-up'),
+    #url(r'activation/$',, name='account-activation'),
  ]

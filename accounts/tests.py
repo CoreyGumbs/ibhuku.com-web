@@ -1,5 +1,6 @@
 import hashlib
 import os
+from datetime import timedelta
 
 from django.core.urlresolvers import resolve
 from django.test import TestCase
@@ -64,7 +65,7 @@ class IbkUserProfileCreated(TestCase):
 	 	self.assertEqual("New York", self.profile.location)
 
 	def test_account_validation_key_hashing(self):
-		signer = Signer()
+		signer = Signer(salt=hashlib.sha1(os.urandom(16)).hexdigest())
 		key_value = signer.sign(self.profile.user.email)
 		key = ''.join(key_value.split(':')[1:])
 		self.assertEqual(self.profile.user.email, signer.unsign('{0}:{1}'.format(self.profile.user.email, key)))
@@ -101,6 +102,21 @@ class IbhukuRegistrationPageTest(TestCase):
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
 
+# class ResetActivationLinkPageTest(TestCase):
+# 	def test_reset_activation_link_page_status_code(self):
+# 		response = self.client.get('/accounts/resend/')
+# 		self.assertEqual(response.status_code, 200)
+
+# 	def test_reset_link_view_uses_reset_link_template(self):
+# 		response = self.client.get('/accounts/resend/1')
+# 		self.assertTemplateUsed(response, 'accounts/reset_link_form.html')
+
+# 	def test_registration_page_returns_correct_html(self):
+# 		response = self.client.get('/accounts/register/')
+# 		html = response.content.decode('utf8')
+# 		self.assertIn('<title>Sign-Up!</title>', html)
+# 		self.assertIn('submit', html)
+
 #Browser Test to check for '/accounts/' url and index page title html
 class AccountsSignUpTest(StaticLiveServerTestCase):
 	#set up selenium/browser
@@ -130,7 +146,7 @@ class AccountsSignUpTest(StaticLiveServerTestCase):
 		self.assertEqual(password_input.get_attribute('placeholder'), 'Password')
 
 		name_input.send_keys('Testy McTesty')
-		email_input.send_keys('test@testing.com')
+		email_input.send_keys('coreygumbs@gmail.com')
 		password_input.send_keys('password123')
 
 		self.browser.find_element_by_id("submit-id-submit").submit()
@@ -141,4 +157,17 @@ class AccountsSignUpTest(StaticLiveServerTestCase):
 		self.browser.get('http://localhost:8000/accounts/')
 		self.assertIn('Accounts', self.browser.title)
 
+# class ResetAccountActivationsLink(StaticLiveServerTestCase):
+# 	#set up selenium/browser
+# 	def setUp(self):
+# 		#ChromeDriver
+# 		self.browser = webdriver.Chrome('/usr/local/bin/chromedriver')
+# 		self.browser.implicitly_wait(10)
 
+# 	#tear down browser after testing
+# 	def tearDown(self):
+# 		self.browser.quit()
+
+# 	def test_get_activation_link_url(self):
+# 		self.browser.get('http://localhost:8000/accounts/resend/')
+# 		self.assertIn('New Activation Link', self.browser.title)

@@ -10,7 +10,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Button, Reset
 from crispy_forms.bootstrap import FormActions, PrependedText
 
-from .models import IbkUser
+from .models import IbkUser, Profile
 
 
 class IbkUserSignUpForm(ModelForm):
@@ -44,3 +44,18 @@ class IbkUserSignUpForm(ModelForm):
 					),
 			)
 
+class ResetEmailActivationLinkForm(ModelForm):
+	class Meta:
+		model = Profile
+		fields =()
+
+	def __init__(self, *args, **kwargs):
+		super(ResetEmailActivationLinkForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_id = 'resetLinkForm'
+		self.helper.form_method = 'post'
+		self.helper.layout = Layout(
+				FormActions(
+					Submit('submit', 'Submit', css_class ='btn btn-success btn-block'),
+					),
+			)

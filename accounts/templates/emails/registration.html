@@ -3,28 +3,67 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Welcome to Ibhuku! Confirm Your Email</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+		body {
+			background-color: white;
+			font-family: Arial, sans-serif;
+		}
+		p {
+			font-size: 16px;
+			line-height: 25px;
+		}
+		button { 
+			background-color: #177f43;
+			height: 45px;
+			width: 300px;
+			padding: 10px;
+			font-size: 16px;
+			border: 0;
+			border-radius: 5px;
+			color: white;
+		 }
+		 button:hover{
+			background-color: #075327;
+		 }
+		 td{
+		 	padding: 0px 30px;
+		 }
+		 a{
+		 	text-decoration: none;
+		 }
+	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6">
-				<h2 class=page-header>You're almost done!</h2>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-6 well well-lg">
-				<div class="col-md-12">
-					<h3>Just confirm your email address.</h3>
-				</div>
-				<div class="col-md-12">
-					<p>
-						By clicking on the following link, you are confirming your email address and agreeing to Ibhuku's terms of service.
-					</p>
-					<button class='btn btn-success btn-lg btn-block'> Confirm Email</button>
-				</div>
-			</div>
-		</div>
-	</div>
+		<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					<table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style=" border: 1px solid #eeeeee; border-collapse: collapse;">
+						<tr style="background-color: #e2e2e2;">
+							<td>
+								<h2>{{name}}, you're almost done!</h2>
+								<h3>Just confirm your email address.</h3>
+							</td>
+						</tr>
+						<tr>
+							<td style="padding: 20px 30px">
+								<p>
+									By clicking on the following link, you are confirming your email address and agreeing to Ibhuku's terms of service. 
+								</p>
+								<p>
+									You can also copy and paste this link in your browser: {% autoescape on %}
+										http://localhost:8000{% url 'accounts:activation' key %}
+									{% endautoescape %}
+								</p>
+							</td>
+						</tr>
+						<tr align="center">
+							<td id="btn-row" height="100">
+								<a href="http://localhost:8000{% url 'accounts:activation' key %}"><button class='btn btn-success btn-lg btn-block'> Confirm Email Address</button></a>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
 </body>
 </html>

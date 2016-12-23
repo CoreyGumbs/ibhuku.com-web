@@ -65,6 +65,7 @@ class Profile(models.Model):
 	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True) 
 	verified = models.BooleanField(_('verified'), default=False)
 	verify_key = models.CharField(_('key'), max_length=250, blank=False)
+	key_date = models.DateTimeField(_('key date'), auto_now=True)
 
 	class Meta:
 		db_table = 'user_profiles'

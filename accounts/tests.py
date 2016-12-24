@@ -3,7 +3,8 @@ import os
 from datetime import timedelta
 
 from django.core.urlresolvers import resolve
-from django.test import TestCase
+from django.test import TestCase, Client
+
 from django.core.signing import Signer, TimestampSigner
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.hashers import make_password, check_password
@@ -12,7 +13,7 @@ from django.http import HttpRequest
 from selenium import webdriver
 
 from accounts.models import IbkUser, Profile
-from accounts.views import AccountsIndex, AccountSignUp
+from accounts.views import AccountSignUp
 
 
 # Create your tests here.
@@ -71,19 +72,21 @@ class IbkUserProfileCreated(TestCase):
 		self.assertEqual(self.profile.user.email, signer.unsign('{0}:{1}'.format(self.profile.user.email, key)))
 		
 #Test to see if app url '../accounts/' is responding
-class IbkUserAccountsIndexPageTest(TestCase):
-	def test_account_page_status_code_to_index_page_view(self):
-		response = self.client.get('/accounts/')
-		self.assertEqual(response.status_code, 200)
+class IbkUserAccountsRedirectTest(TestCase):
+	def test_index_redirect_status_code_to_register_view(self):
+		#c = Client()
+		response = self.client.get('/accounts/', follow=True)
+		print(response.status_code)
+		self.assertRedirects(response, '/accounts/register/')
 
-	def test_index_view_uses_index_template(self):
-		response = self.client.get('/accounts/')
+	def test_redirect_uses_base_template(self):
+		response = self.client.get('/accounts/', follow=True)
 		self.assertTemplateUsed(response, 'accounts/base.html')
 
 	def test_index_page_returns_correct_html(self):
-		response = self.client.get('/accounts/')
+		response = self.client.get('/accounts/', follow=True)
 		html = response.content.decode('utf8')
-		self.assertIn('<title>Accounts</title>', html)
+		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertTemplateUsed(response, 'accounts/base.html')
 
 #Test of Accounts Registrations Views/URLs
@@ -101,7 +104,7 @@ class IbhukuRegistrationPageTest(TestCase):
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
-		
+
 
 #Browser Test to check for '/accounts/' url and index page title html
 class AccountsSignUpTest(StaticLiveServerTestCase):
@@ -117,7 +120,7 @@ class AccountsSignUpTest(StaticLiveServerTestCase):
 
 	def test_get_accounts_url(self):
 		self.browser.get('http://localhost:8000/accounts/')
-		self.assertIn("Accounts", self.browser.title)
+		self.assertIn("Sign-Up!", self.browser.title)
 
 	def test_user_signup_creation(self):
 		self.browser.get('http://localhost:8000/accounts/register/')
@@ -141,19 +144,5 @@ class AccountsSignUpTest(StaticLiveServerTestCase):
 
 	def test_check_success_redirect(self):
 		self.browser.get('http://localhost:8000/accounts/')
-		self.assertIn('Accounts', self.browser.title)
+		self.assertIn('Sign-Up!', self.browser.title)
 
-# class ResetAccountActivationsLink(StaticLiveServerTestCase):
-# 	#set up selenium/browser
-# 	def setUp(self):
-# 		#ChromeDriver
-# 		self.browser = webdriver.Chrome('/usr/local/bin/chromedriver')
-# 		self.browser.implicitly_wait(10)
-
-# 	#tear down browser after testing
-# 	def tearDown(self):
-# 		self.browser.quit()
-
-# 	def test_get_activation_link_url(self):
-# 		self.browser.get('http://localhost:8000/accounts/resend/')
-# 		self.assertIn('New Activation Link', self.browser.title)

@@ -19,9 +19,6 @@ from .models import IbkUser, Profile
 from .forms	 import IbkUserSignUpForm, ResetEmailActivationLinkForm
 
 # Create your views here.
-class AccountsIndex(TemplateView):
-	template_name = 'accounts/base.html'
-
 class AccountSignUp(CreateView):
 	form_class = IbkUserSignUpForm
 	template_name = 'accounts/signup_form.html'

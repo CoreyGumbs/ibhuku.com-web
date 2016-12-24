@@ -15,6 +15,7 @@ from .models import IbkUser, Profile
 
 class IbkUserSignUpForm(ModelForm):
 	
+
 	class Meta:
 		model = IbkUser
 		fields = ('name', 'email', 'password')

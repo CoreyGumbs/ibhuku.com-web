@@ -8,6 +8,7 @@ from django.urls import reverse_lazy, reverse
 from django.core.signing import Signer, TimestampSigner, BadSignature
 from django.core import signing
 from django.core.mail import send_mail, EmailMultiAlternatives
+from django.utils import timezone
 from django.template.loader import render_to_string
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.base import TemplateView
@@ -53,12 +54,12 @@ class AccountSignUp(CreateView):
 def AccountActivation(request, verify_key):
 	try:
 		profile = Profile.objects.get(verify_key=verify_key)
-		numdays = profile.key_date + datetime.timedelta(seconds=60)
-		print(numdays)
 		signer = Signer()
-		if signer.unsign('{0}:{1}'.format(profile.user.email, profile.verify_key)) == profile.user.email:
+		check_key = signer.unsign('{0}:{1}'.format(profile.user.email, profile.verify_key))
+		if (check_key == profile.user.email) and (profile.expire_date > timezone.now()):
 			profile.verified = True
 			profile.verify_key = 'expired'
+			profile.expire_date = timezone.now()
 			profile.save()
 			return HttpResponse('Your Account is now verified. Thank you.')
 	except Profile.DoesNotExist:
@@ -85,6 +86,7 @@ class ResetLinkActivation(CreateView):
 			return HttpResponse("Your account is already verified.")
 		else:
 			profile.verify_key = self.generate_profile_validation_key(profile.user.email)
+			profile.expire_date = form.instance.expire_date + datetime.timedelta(days=3)
 			profile.save()
 			user_context = {
 				'name': profile.user.name,

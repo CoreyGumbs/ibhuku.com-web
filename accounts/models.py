@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,6 +15,9 @@ from .managers import UserManager
 
 def user_directory_path(instance, filename):
 	return 'useraccounts/user_%s/%s' % (instance.ibkuser.get_short_name(), filename)
+
+def get_account_valid_link_expire():
+	return timezone.now() + timedelta(days=3)
 
 # Create your models here.
 class IbkUser(AbstractBaseUser, PermissionsMixin):
@@ -65,7 +70,8 @@ class Profile(models.Model):
 	avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True) 
 	verified = models.BooleanField(_('verified'), default=False)
 	verify_key = models.CharField(_('key'), max_length=250, blank=False)
-	key_date = models.DateTimeField(_('key date'), auto_now=True)
+	expire_date = models.DateTimeField(_('expire date'), default=get_account_valid_link_expire)
+	last_login = models.DateTimeField(_('last login'), auto_now=True) 
 
 	class Meta:
 		db_table = 'user_profiles'

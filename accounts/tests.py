@@ -101,21 +101,7 @@ class IbhukuRegistrationPageTest(TestCase):
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
 		self.assertIn('submit', html)
-
-# class ResetActivationLinkPageTest(TestCase):
-# 	def test_reset_activation_link_page_status_code(self):
-# 		response = self.client.get('/accounts/resend/')
-# 		self.assertEqual(response.status_code, 200)
-
-# 	def test_reset_link_view_uses_reset_link_template(self):
-# 		response = self.client.get('/accounts/resend/1')
-# 		self.assertTemplateUsed(response, 'accounts/reset_link_form.html')
-
-# 	def test_registration_page_returns_correct_html(self):
-# 		response = self.client.get('/accounts/register/')
-# 		html = response.content.decode('utf8')
-# 		self.assertIn('<title>Sign-Up!</title>', html)
-# 		self.assertIn('submit', html)
+		
 
 #Browser Test to check for '/accounts/' url and index page title html
 class AccountsSignUpTest(StaticLiveServerTestCase):

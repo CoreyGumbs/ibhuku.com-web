@@ -50,9 +50,8 @@ class AccountSignUp(CreateView):
 		return HttpResponseRedirect(self.get_success_url())
 
 def AccountActivation(request, verify_key):
-	profile = get_object_or_404(Profile, verify_key=verify_key)
 	try:
-		profile = get_object_or_404(Profile, verify_key=verify_key)
+		profile = Profile.objects.get(verify_key=verify_key)
 		signer = Signer()
 		check_key = signer.unsign('{0}:{1}'.format(profile.user.email, profile.verify_key))
 		if check_key == profile.user.email and profile.expire_date > timezone.now():
@@ -60,8 +59,13 @@ def AccountActivation(request, verify_key):
 			profile.verify_key = 'expired'
 			profile.save()
 			return HttpResponseRedirect(reverse('accounts:verified'))
-	except Profile.DoesNotExist:
-		return HttpResponseRedirect(reverse('accounts:reset-error'))
+	except ObjectDoesNotExist:
+		try:
+			profile = Profile.objects.get(verify_key='expired')
+			if profile.verify_key == 'expired':
+				return HttpResponseRedirect(reverse('accounts:verified'))
+		except:
+			return HttpResponseRedirect(reverse('accounts:reset-error'))
 	except:
 		return HttpResponseRedirect(reverse('accounts:verified'))
 	return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
@@ -79,7 +83,7 @@ class ResetLinkActivation(CreateView):
 
 	def form_valid(self, form):
 		try:
-			profile = get_object_or_404(Profile, user_id=self.kwargs['user_id'])
+			profile = Profile.objects.get(user_id=self.kwargs['user_id'])
 			if profile.verified is True:
 				return HttpResponseRedirect(reverse('accounts:verified'))
 			else:
@@ -97,8 +101,10 @@ class ResetLinkActivation(CreateView):
 				msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
 				msg.attach_alternative(html_content, "text/html")
 				msg.send()
-		except:
+		except ObjectDoesNotExist:
 			return HttpResponseRedirect(reverse('accounts:reset-error'))
+		except:
+			return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
 		return HttpResponseRedirect(reverse('accounts:activation-sent'))
 
 class ActivationLinkSentMessage(TemplateView):

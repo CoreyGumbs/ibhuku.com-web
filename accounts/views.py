@@ -88,7 +88,7 @@ class ResetLinkActivation(CreateView):
 				return HttpResponseRedirect(reverse('accounts:verified'))
 			else:
 				profile.verify_key = self.generate_profile_validation_key(profile.user.email)
-				profile.expire_date = form.instance.expire_date + datetime.timedelta(days=3)
+				profile.expire_date = timezone.now() + datetime.timedelta(days=3)
 				profile.save()
 				user_context = {
 					'name': profile.user.name,

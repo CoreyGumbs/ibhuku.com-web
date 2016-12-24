@@ -17,7 +17,7 @@ def user_directory_path(instance, filename):
 	return 'useraccounts/user_%s/%s' % (instance.ibkuser.get_short_name(), filename)
 
 def get_account_valid_link_expire():
-	return timezone.now() + timedelta(seconds=10)
+	return timezone.now() + timedelta(seconds=30)
 
 # Create your models here.
 class IbkUser(AbstractBaseUser, PermissionsMixin):

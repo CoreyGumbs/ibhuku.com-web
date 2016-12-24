@@ -57,6 +57,6 @@ class ResetEmailActivationLinkForm(ModelForm):
 		self.helper.form_method = 'post'
 		self.helper.layout = Layout(
 				FormActions(
-					Submit('submit', 'Submit', css_class ='btn btn-success btn-block'),
+					Submit('submit', 'Send Link', css_class ='btn btn-success btn-block'),
 					),
 			)

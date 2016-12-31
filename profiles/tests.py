@@ -13,11 +13,17 @@ class UserProfileTestDataSetUp(TestCase):
 	Some test will inherit from this class for testing Profiles app views and logic.
 	"""
 	def setUp(self):
+		"""
+		Set up Django's RequestFactory() and Client() for HTTP request/response.
+		"""
 		self.factory = RequestFactory()
 		self.client = Client()
 
 	@classmethod
 	def setUpTestData(cls):
+		"""
+		Set up user and user profile data in database. 
+		"""
 		cls.user = IbkUser.objects.create(email = "johndoe@test.com", name="John Doe", username="JohnnyBread", password="12345")
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
@@ -27,5 +33,13 @@ class UserProfileTestDataSetUp(TestCase):
 
 
 class ProfileLoginTest(UserProfileTestDataSetUp):
-	pass
+	"""
+	Test the Profiles app login view and urls.
+	"""
+	def test_get_login_url(self):
+		"""
+		Test that the URL for the login view resolves to the correct view function
+		"""
+		response = self.client.get('/profiles/login/')
+		self.assertEqual(response.status_code, 200)
 

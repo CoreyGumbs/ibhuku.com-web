@@ -13,7 +13,6 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.base import TemplateView
-from django.views.generic import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from .models import IbkUser, Profile
@@ -32,6 +31,7 @@ class AccountSignUp(CreateView):
 		return key_value
 
 	def form_valid(self, form):
+		form.instance.name = form.instance.name.replace(' ', '')
 		self.object = form.save()
 		profile = Profile.objects.get(user_id=form.instance.id)
 		profile.verify_key = self.generate_profile_validation_key(form.instance.email)

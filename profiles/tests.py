@@ -42,4 +42,5 @@ class ProfileLoginTest(UserProfileTestDataSetUp):
 		"""
 		response = self.client.get('/profiles/login/')
 		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'log/login.html')
 

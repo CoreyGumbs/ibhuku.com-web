@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 # Create your views here.
 def ProfileLogin(request):
-	return HttpResponse('test')
+	return render(request, 'log/login.html')

@@ -1,7 +1,10 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<a href="{% url 'accounts:index' %}" class="navbar-brand"> Ibhuku </a>
+		</div>
+		<div class="nav navbar-nav">
+			<li class="active"><a href="{%url 'profiles:login' %}">Login</a></li>
 		</div>
 	</div>
 </nav>

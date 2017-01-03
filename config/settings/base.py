@@ -54,6 +54,8 @@ INSTALLED_APPS = [
 
 AUTH_USER_MODEL = 'accounts.IbkUser'
 
+LOGIN_URL = 'profiles:login'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

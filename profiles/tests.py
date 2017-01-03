@@ -27,9 +27,10 @@ class UnAuthorizedProfilesDashboardPageTest(TestCase):
 
 	def test_profile_page_redirect(self):
 		"""
-		Test access denied page redirects to login page
+		Test access denied page redirects to login page using javascript redirection
 		"""
-		response = self.client.get('/profiles/', follow=True)
+		response = self.client.get('/profiles/')
+		self.assertEqual(response.status_code, 200)
 		time.sleep(6)
 		self.assertRedirects(response, '/profiles/login/', status_code=301, target_status_code=301)
 

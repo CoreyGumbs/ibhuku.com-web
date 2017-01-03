@@ -1,6 +1,12 @@
+argon2-cffi==16.3.0
+cffi==1.9.1
+closure==20160517
 coverage==4.2
 Django==1.10.4
+django-crispy-forms==1.6.1
 Pillow==3.4.2
 psycopg2==2.6.2
+pycparser==2.17
 pytz==2016.10
 selenium==3.0.2
+six==1.10.0

@@ -36,6 +36,8 @@ def get_secret(setting, secrets=secrets):
 
 SECRET_KEY = get_secret("SECRET_KEY")
 
+USER_SALT = get_secret('USER_SALT')
+
 ALLOWED_HOSTS = []
 
 # Application definition

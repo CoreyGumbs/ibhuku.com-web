@@ -1,5 +1,3 @@
-import hashlib
-import os
 import time
 from datetime import timedelta
 from importlib import import_module
@@ -13,7 +11,6 @@ from django.test import TestCase, Client, RequestFactory
 from django.http import HttpRequest
 
 from accounts.models import IbkUser, Profile
-from accounts.views import ActivationLinkSentMessage 
 
 
 class TestModelFixtures(TestCase):
@@ -72,7 +69,7 @@ class TestActivationLinkSentView(TestModelFixtures):
 class TestVerifiedAccountMessageView(TestModelFixtures):
 	"""
 	Test VerifiedAccountMessage view. This view uses session cookie (session['active'] = True)
-	to test is newly verified account is active. If True, the verified message appears. If false, redirects
+	to test if newly verified account is active. If True, the verified message appears. If false, redirects
 	unauthorized users to the login page.
 	"""
 
@@ -86,6 +83,16 @@ class TestVerifiedAccountMessageView(TestModelFixtures):
 		response = self.client.get('/accounts/verified/', follow=True)
 		self.assertRedirects(response, '/profiles/login/?next=/accounts/verified/')
 
+class TestACcountErrorMessageView(TestCase):
+	def test_acccount_error(self):
+		response = self.client.get('/accounts/error/')
+		self.assertEqual(response.status_code, 200)
+
+	def test_account_error_template(self):
+		response = self.client.get('/accounts/error/')
+		html = response.content.decode('utf8')
+		self.assertTemplateUsed('accounts/account_error.html')
+		self.assertIn('<title>Account Error</title>', html)
 
 
 # #Test of Accounts Registrations Views/URLs

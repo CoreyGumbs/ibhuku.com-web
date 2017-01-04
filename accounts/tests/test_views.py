@@ -24,6 +24,9 @@ class TestModelFixtures(TestCase):
 	def setUp(self):
 		self.factory = RequestFactory()
 		self.client = Client()
+		self.session = self.client.session
+		self.session['active'] =  True
+		self.session.save()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -32,6 +35,23 @@ class TestModelFixtures(TestCase):
 		cls.user.save()
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
+class TestAccountsIndexPage(TestModelFixtures):
+	"""
+	Test the url '/accounts/' redirects to the sign-up/register page.
+	"""
+	def test_accounts_url_redirects_to_register_view(self):
+		response = self.client.get('/accounts/', follow=True)
+		self.assertRedirects(response, '/accounts/register/')
+		self.assertEqual(response.status_code, 200)
+
+	def test_accounts_index_template(self):
+		response = self.client.get('/accounts/', follow=True)
+		self.assertTemplateUsed(response, 'accounts/signup_form.html')
+
+	def test_accounts_index_content(self):
+		response = self.client.get('/accounts/', follow=True)
+		html = response.content.decode('utf8')
+		self.assertIn('<title>Sign-Up!</title>', html)
 
 class TestActivationLinkSentView(TestModelFixtures):
 	"""
@@ -40,35 +60,33 @@ class TestActivationLinkSentView(TestModelFixtures):
 	unauthorized users to the login page.
 	"""
 	def test_view_can_be_viewed_by_new_account(self):
-		session = self.client.session
-		session['active'] =  True
-		session.save()
 		response = self.client.get('/accounts/sent/')
 		self.assertEqual(response.status_code, 200, msg="Should show view message template")
 
 	def test_view_cannot_be_accessed_anonymously(self):
-		session = self.client.session
-		session['active'] =  False
-		session.save()
+		self.session['active'] =  False
+		self.session.save()
 		response = self.client.get('/accounts/sent/', follow=True)
 		self.assertRedirects(response, '/profiles/login/?next=/accounts/sent/')
 
+class TestVerifiedAccountMessageView(TestModelFixtures):
+	"""
+	Test VerifiedAccountMessage view. This view uses session cookie (session['active'] = True)
+	to test is newly verified account is active. If True, the verified message appears. If false, redirects
+	unauthorized users to the login page.
+	"""
 
-# #Test to see if app url '../accounts/' is responding
-# class IbkUserAccountsRedirectTest(TestCase):
-# 	def test_index_redirect_status_code_to_register_view(self):
-# 		response = self.client.get('/accounts/', follow=True)
-# 		self.assertRedirects(response, '/accounts/register/')
+	def test_view_can_be_viewed_by_newly_activated_account(self):
+		response = self.client.get('/accounts/verified/')
+		self.assertEqual(response.status_code, 200)
 
-# 	def test_redirect_uses_base_template(self):
-# 		response = self.client.get('/accounts/', follow=True)
-# 		self.assertTemplateUsed(response, 'accounts/base.html')
+	def test_verified_view_cannot_be_accessed_anonymously(self):
+		self.session['active'] =  False
+		self.session.save()
+		response = self.client.get('/accounts/verified/', follow=True)
+		self.assertRedirects(response, '/profiles/login/?next=/accounts/verified/')
 
-# 	def test_index_page_returns_correct_html(self):
-# 		response = self.client.get('/accounts/', follow=True)
-# 		html = response.content.decode('utf8')
-# 		self.assertIn('<title>Sign-Up!</title>', html)
-# 		self.assertTemplateUsed(response, 'accounts/base.html')
+
 
 # #Test of Accounts Registrations Views/URLs
 # class IbhukuRegistrationPageTest(TestCase):

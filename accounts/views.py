@@ -51,7 +51,6 @@ class AccountSignUp(CreateView):
 		return HttpResponseRedirect(self.get_success_url())
 
 def AccountActivation(request, verify_key):
-	request.session['active'] = False
 	try:
 		profile = Profile.objects.get(verify_key=verify_key)
 		signer = Signer()
@@ -119,8 +118,15 @@ class ActivationLinkSentMessage(UserPassesTestMixin, TemplateView):
 		"""
 		return self.request.session['active']
 
-class VerifiedAccountMessage(TemplateView):
+class VerifiedAccountMessage(UserPassesTestMixin, TemplateView):
 	template_name = 'accounts/verified_account.html'
+	def test_func(self):
+		"""
+		Once account is created, session is set to active. 
+		Tests to see if session is active. If True, allows sent
+		message to be seen by user else it will redirect to login page.
+		"""
+		return self.request.session['active']
 
 class ResetLinkErrorMessage(TemplateView):
 	template_name = 'accounts/reset_error.html'

@@ -1,4 +1,3 @@
-from django.core.urlresolvers import resolve
 from django.test import TestCase
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password, check_password
@@ -14,6 +13,7 @@ class TestModelFixtures(TestCase):
 	def setUpTestData(cls):
 		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="12345")
 		cls.user.password = make_password(cls.user.password, salt='jRkSlAw7KZ')
+		cls.user.save()
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
 class TestIbkUser(TestModelFixtures):
@@ -44,13 +44,7 @@ class TestIbkUser(TestModelFixtures):
 	def test_get_short_name(self):
 		self.assertEqual('McTestyRocks', self.user.get_short_name(), msg='Should return the get_short_name() on AbstractBaseUser model')
 
-	def test_user_password_hashing(self):
-	 	hash_password =  make_password(self.user.password, salt='jRkSlAw7KZ')
-	 	self.user.password = hash_password
-	 	self.user.save()
-	 	self.assertEqual(self.user.password , hash_password, msg='Should hash/salt password, and check if password is hashed.')
-
-	def test_user_password(self):
+	def test_check_user_password(self):
 		check_pass = check_password('12345', self.user.password)
 		self.assertTrue(check_pass, msg='Should return True if password and hashed password equal.')
 
@@ -64,7 +58,6 @@ class TestProfile(TestModelFixtures):
 	def test_profile_save(self):
 		self.profile.bio = "This is McTest McTesty's accounts"
 		self.profile.location = "New York"
-		self.profile.avatar = '../static/images/brand_flower.png'
 		self.profile.save()
 		self.assertEqual("This is McTest McTesty's accounts", self.profile.bio, msg='should return saved profile bio data')
 		self.assertEqual("New York", self.profile.location, msg='Should return saved profile location data')

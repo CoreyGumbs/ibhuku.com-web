@@ -11,7 +11,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.template.loader import render_to_string
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -33,6 +33,7 @@ class AccountSignUp(CreateView):
 	def form_valid(self, form):
 		form.instance.name = form.instance.name.replace(' ', '')
 		self.object = form.save()
+		self.request.session['active'] = form.instance.is_active
 		profile = Profile.objects.get(user_id=form.instance.id)
 		profile.verify_key = self.generate_profile_validation_key(form.instance.email)
 		profile.save()
@@ -50,6 +51,7 @@ class AccountSignUp(CreateView):
 		return HttpResponseRedirect(self.get_success_url())
 
 def AccountActivation(request, verify_key):
+	request.session['active'] = False
 	try:
 		profile = Profile.objects.get(verify_key=verify_key)
 		signer = Signer()
@@ -107,8 +109,15 @@ class ResetLinkActivation(CreateView):
 			return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
 		return HttpResponseRedirect(reverse('accounts:activation-sent'))
 
-class ActivationLinkSentMessage(TemplateView):
+class ActivationLinkSentMessage(UserPassesTestMixin, TemplateView):
 	template_name = 'accounts/activation_sent.html'
+	def test_func(self):
+		"""
+		Once account is created, session is set to active. 
+		Tests to see if session is active. If True, allows sent
+		message to be seen by user else it will redirect to login page.
+		"""
+		return self.request.session['active']
 
 class VerifiedAccountMessage(TemplateView):
 	template_name = 'accounts/verified_account.html'

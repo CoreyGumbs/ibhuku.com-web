@@ -3,11 +3,9 @@
 
 {%block account_title%}Verified Activation Link{%endblock account_title%}
 {%block account_css%}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/account_styles.css' %}">
 	<script>
   		window.setTimeout(function(){
-    		window.location.href = "{% url 'accounts:index' %}";
+    		window.location.href = "{% url 'profiles:login' %}";
   		}, 3000);
 	</script>
 {%endblock account_css%}

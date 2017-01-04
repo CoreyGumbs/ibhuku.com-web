@@ -1,9 +1,7 @@
 from django.core.urlresolvers import resolve
 from django.test import TestCase
-
-from django.core.signing import Signer, TimestampSigner
+from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password, check_password
-from django.http import HttpRequest
 
 from accounts.models import IbkUser, Profile
 
@@ -15,6 +13,7 @@ class TestModelFixtures(TestCase):
 	@classmethod 
 	def setUpTestData(cls):
 		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="12345")
+		cls.user.password = make_password(cls.user.password, salt='jRkSlAw7KZ')
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
 class TestIbkUser(TestModelFixtures):
@@ -46,16 +45,39 @@ class TestIbkUser(TestModelFixtures):
 		self.assertEqual('McTestyRocks', self.user.get_short_name(), msg='Should return the get_short_name() on AbstractBaseUser model')
 
 	def test_user_password_hashing(self):
-		password = make_password(self.user.password, salt='jRkSlAw7KZ')
-		check = check_password(password, self.user.password)
-		self.assertTrue(True , msg='Should salt password, and check if password is correct/readable')
+	 	hash_password =  make_password(self.user.password, salt='jRkSlAw7KZ')
+	 	self.user.password = hash_password
+	 	self.user.save()
+	 	self.assertEqual(self.user.password , hash_password, msg='Should hash/salt password, and check if password is hashed.')
+
+	def test_user_password(self):
+		check_pass = check_password('12345', self.user.password)
+		self.assertTrue(check_pass, msg='Should return True if password and hashed password equal.')
 
 class TestProfile(TestModelFixtures):
 	"""
-	Test Profile Profile Model.
+	Test Profile Profile Model creation and save.
 	"""
 	def test_profile_model(self):
 		self.assertEqual(self.user.pk, self.profile.user_id)
+
+	def test_profile_save(self):
+		self.profile.bio = "This is McTest McTesty's accounts"
+		self.profile.location = "New York"
+		self.profile.avatar = '../static/images/brand_flower.png'
+		self.profile.save()
+		self.assertEqual("This is McTest McTesty's accounts", self.profile.bio, msg='should return saved profile bio data')
+		self.assertEqual("New York", self.profile.location, msg='Should return saved profile location data')
+
+	def test_profile_one_to_one_ibk_user_relationship(self):
+		self.assertEqual(self.profile.user.name, 'McTest McTesty', msg='Should return User model name filed data from OneToOne relation')
+		self.assertEqual(self.profile.user.username, 'McTestyRocks', msg='Should return User model username field data from OneToOne relation')
+
+	def test_string_representation(self):
+		self.assertEqual(self.user.username, self.profile.__str__(), msg='Should return __str__ representation')
+
+	def test_unicode_string_representation(self):
+		self.assertEqual(self.user.username, self.profile.__unicode__(), msg='Should return __unicode__ representation')
 
 
 

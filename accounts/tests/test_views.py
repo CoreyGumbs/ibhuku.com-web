@@ -53,7 +53,7 @@ class TestAccountsIndexPage(TestModelFixtures):
 class TestActivationLinkSentView(TestModelFixtures):
 	"""
 	Test ActivationLinkSent message view. This view uses session cookie (session['active'] = True)
-	to test is newly created account is active. If True, the link sent message appears. If false, redirects
+	to test if newly created account is active. If True, the link sent message appears. If false, redirects
 	unauthorized users to the login page.
 	"""
 	def test_view_can_be_viewed_by_new_account(self):
@@ -83,7 +83,7 @@ class TestVerifiedAccountMessageView(TestModelFixtures):
 		response = self.client.get('/accounts/verified/', follow=True)
 		self.assertRedirects(response, '/profiles/login/?next=/accounts/verified/')
 
-class TestACcountErrorMessageView(TestCase):
+class TestAccountErrorMessageView(TestCase):
 	def test_acccount_error(self):
 		response = self.client.get('/accounts/error/')
 		self.assertEqual(response.status_code, 200)

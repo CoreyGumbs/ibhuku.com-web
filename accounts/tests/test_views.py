@@ -11,7 +11,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.test import TestCase, Client, RequestFactory
 from django.http import HttpRequest
 
-from accounts.accountslib import profile_validation_key
+from accounts.accountslib import profile_validation_key, authorized_view_session_check
 from accounts.models import IbkUser, Profile
 from accounts.views import AccountSignUp
 
@@ -35,7 +35,7 @@ class TestModelFixtures(TestCase):
 		cls.user.save()
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
-class TestProfileValidationKey(TestModelFixtures):
+class TestProfileValidationKeyFunction(TestModelFixtures):
 	"""
 	Test profile_validation_key() found in the accountslib.py module.
 	Uses Django Signer to 'hash' email. To unsign hash, check_key, joins
@@ -48,9 +48,26 @@ class TestProfileValidationKey(TestModelFixtures):
 		check_key = signer.unsign('{0}:{1}'.format(self.user.email, valid_key))
 		self.assertEqual(check_key, self.user.email)
 
-class TestAccountsIndexPage(TestModelFixtures):
+class TestAuthorizedViewSessionCheckFunction(TestModelFixtures):
+	"""
+	Test is session['active'] is True or False. The result determines if
+	True or False for test_func permission on class views. These permissions
+	dictate if the particular view can be seen by an authorized user or not. 
+	"""
+	def test_session_check(self):
+		valid_session = authorized_view_session_check(self.session['active'])
+		self.assertTrue(True, valid_session)
+
+	def test_invalid_session_check(self):
+		self.session['active'] =  False
+		self.session.save()
+		valid_session = authorized_view_session_check(self.session['active'])
+		self.assertFalse(False, valid_session)
+
+class TestAccountsIndexViewRedirection(TestModelFixtures):
 	"""
 	Test the url '/accounts/' redirects to the sign-up/register page.
+	Uses RedirectView located in the accouts/urls.py module.
 	"""
 	def test_accounts_url_redirects_to_register_view(self):
 		response = self.client.get('/accounts/', follow=True)
@@ -67,11 +84,21 @@ class TestAccountsIndexPage(TestModelFixtures):
 		self.assertIn('<title>Sign-Up!</title>', html)
 
 class TestAccountSignUpView(TestModelFixtures):
-	
+	"""
+	Test the '/accounts/register/' view for registering new account.
+	"""
 	def test_sign_up_view(self):
 		response = self.client.get('/accounts/register/')
 		self.assertEqual(response.status_code, 200)
 
+	def test_view_returns_template(self):
+		response = self.client.get('/accounts/register/')
+		self.assertTemplateUsed(response, 'accounts/signup_form.html')
+
+	def test_correct_html(self):
+		response = self.client.get('/accounts/register/')
+		html = response.content.decode('utf8')
+		self.assertIn('<title>Sign-Up!</title>', html)
 
 class TestActivationLinkSentView(TestModelFixtures):
 	"""
@@ -106,6 +133,13 @@ class TestVerifiedAccountMessageView(TestModelFixtures):
 		response = self.client.get('/accounts/verified/', follow=True)
 		self.assertRedirects(response, '/profiles/login/?next=/accounts/verified/')
 
+	def test_account_verified(self):
+		self.profile.verified = True
+		self.profile.key_value = 'expired'
+		self.profile.save()
+		self.assertTrue(self.profile.verified, True)
+		self.assertEqual('expired', self.profile.key_value)
+
 class TestAccountErrorMessageView(TestCase):
 	def test_acccount_error(self):
 		response = self.client.get('/accounts/error/')
@@ -116,30 +150,6 @@ class TestAccountErrorMessageView(TestCase):
 		html = response.content.decode('utf8')
 		self.assertTemplateUsed('accounts/account_error.html')
 		self.assertIn('<title>Account Error</title>', html)
-
-
-
-# #Test of Accounts Registrations Views/URLs
-# class IbhukuRegistrationPageTest(TestCase):
-# 	def test_sign_up_page_status_code(self):
-# 		response = self.client.get('/accounts/register/')
-# 		self.assertEqual(response.status_code, 200)
-
-# 	def test_sign_up_view_uses_sign_up_template(self):
-# 		response = self.client.get('/accounts/register/')
-# 		self.assertTemplateUsed(response, 'accounts/signup_form.html')
-
-# 	def test_registration_page_returns_correct_html(self):
-# 		response = self.client.get('/accounts/register/')
-# 		html = response.content.decode('utf8')
-# 		self.assertIn('<title>Sign-Up!</title>', html)
-# 		self.assertIn('submit', html)
-
-# 	def test_account_validation_key_hashing(self):
-# 		signer = Signer()
-# 		key_value = signer.sign(self.profile.user.email)
-# 		key = ''.join(key_value.split(':')[1:])
-# 		self.assertEqual(self.profile.user.email, signer.unsign('{0}:{1}'.format(self.profile.user.email, key)))
 
 # class ActivationLinkResetTest(TestCase):
 # 	@classmethod

@@ -9,6 +9,9 @@ from django.conf import settings
 from django.core.signing import Signer
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.core.exceptions import ObjectDoesNotExist
+
+from accounts.models import Profile
 
 
 def profile_validation_key(user_key):
@@ -42,4 +45,12 @@ def authorized_view_session_check(valid_session):
 		else:
 			return False
 	except KeyError:
+		return False
+
+def authorize_view_profile_check(valid_profile):
+	try:
+		profile = Profile.objects.get(user_id=valid_profile)
+		if profile:
+			return True
+	except ObjectDoesNotExist:
 		return False

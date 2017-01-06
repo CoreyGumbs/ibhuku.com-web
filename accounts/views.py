@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
  
-from .accountslib import profile_validation_key, account_validation_email, authorized_view_session_check
+from .accountslib import profile_validation_key, account_validation_email, authorized_view_session_check, authorize_view_profile_check
 
 from .models import IbkUser, Profile
 from .forms	 import IbkUserSignUpForm, ResetEmailActivationLinkForm
@@ -51,7 +51,6 @@ def AccountActivation(request, verify_key):
 		return HttpResponseRedirect(reverse('accounts:verified'))
 	return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
 
-
 class ResetLinkActivation(UserPassesTestMixin, CreateView):
 	form_class = ResetEmailActivationLinkForm
 	template_name = 'accounts/reset_link_form.html'
@@ -63,13 +62,8 @@ class ResetLinkActivation(UserPassesTestMixin, CreateView):
 		Tests to see if session is active. If True, allows sent
 		message to be seen by user else it will redirect to login page.
 		"""
-		try:
-			profile = Profile.objects.get(user_id=self.kwargs['user_id'])
-			if profile:
-				return True
-		except ObjectDoesNotExist:
-			return False
-
+		return authorize_view_profile_check(self.kwargs['user_id'])
+		
 	def get_login_url(self):
 		try:  
 			profile = Profile.objects.get(user_id=self.kwargs['user_id'])

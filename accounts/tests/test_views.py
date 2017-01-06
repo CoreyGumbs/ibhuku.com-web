@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import time
 from datetime import timedelta
 from importlib import import_module
@@ -10,7 +11,9 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.test import TestCase, Client, RequestFactory
 from django.http import HttpRequest
 
+from accounts.accountslib import profile_validation_key
 from accounts.models import IbkUser, Profile
+from accounts.views import AccountSignUp
 
 
 class TestModelFixtures(TestCase):
@@ -32,6 +35,19 @@ class TestModelFixtures(TestCase):
 		cls.user.save()
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
+class TestProfileValidationKey(TestModelFixtures):
+	"""
+	Test profile_validation_key() found in the accountslib.py module.
+	Uses Django Signer to 'hash' email. To unsign hash, check_key, joins
+	the email to the 'hash' for decoding. 
+	User email should equal decoded (check_key) hash.
+	"""
+	def test_validation_key(self):
+		valid_key = profile_validation_key(self.user.email)
+		signer = Signer(salt= settings.USER_SALT)
+		check_key = signer.unsign('{0}:{1}'.format(self.user.email, valid_key))
+		self.assertEqual(check_key, self.user.email)
+
 class TestAccountsIndexPage(TestModelFixtures):
 	"""
 	Test the url '/accounts/' redirects to the sign-up/register page.
@@ -49,6 +65,13 @@ class TestAccountsIndexPage(TestModelFixtures):
 		response = self.client.get('/accounts/', follow=True)
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Sign-Up!</title>', html)
+
+class TestAccountSignUpView(TestModelFixtures):
+	
+	def test_sign_up_view(self):
+		response = self.client.get('/accounts/register/')
+		self.assertEqual(response.status_code, 200)
+
 
 class TestActivationLinkSentView(TestModelFixtures):
 	"""
@@ -93,6 +116,7 @@ class TestAccountErrorMessageView(TestCase):
 		html = response.content.decode('utf8')
 		self.assertTemplateUsed('accounts/account_error.html')
 		self.assertIn('<title>Account Error</title>', html)
+
 
 
 # #Test of Accounts Registrations Views/URLs

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from django.test import TestCase
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password, check_password

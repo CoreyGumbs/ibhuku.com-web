@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import hashlib
 import os
 from datetime import timedelta

@@ -6,10 +6,10 @@ from django.urls import reverse_lazy, reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic.base import TemplateView
+from django.views.generic.base import View, TemplateView
 from django.views.generic.edit import CreateView, UpdateView
  
-from .accountslib import profile_validation_key, account_validation_email, authorized_view_session_check, authorize_view_profile_check
+from .accountslib import (profile_validation_key, account_validation_email, authorized_view_session_check, authorize_view_profile_check,check_profile_validation_key,)
 
 from .models import IbkUser, Profile
 from .forms	 import IbkUserSignUpForm, ResetEmailActivationLinkForm
@@ -33,8 +33,7 @@ class AccountSignUp(CreateView):
 def AccountActivation(request, verify_key):
 	try:
 		profile = Profile.objects.get(verify_key=verify_key)
-		signer = Signer(salt= settings.USER_SALT)
-		check_key = signer.unsign('{0}:{1}'.format(profile.user.email, profile.verify_key))
+		check_key = check_profile_validation_key(profile.user.email, profile.verify_key)
 		if check_key == profile.user.email and profile.expire_date > timezone.now():
 			profile.verified = True
 			profile.verify_key = 'expired'
@@ -49,7 +48,7 @@ def AccountActivation(request, verify_key):
 			return HttpResponseRedirect(reverse('accounts:account-error'))
 	except:
 		return HttpResponseRedirect(reverse('accounts:verified'))
-	return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
+	return HttpResponseRedirect(reverse('accounts:link-reset', args=[profile.user_id]))
 
 class ResetLinkActivation(UserPassesTestMixin, CreateView):
 	form_class = ResetEmailActivationLinkForm
@@ -63,7 +62,7 @@ class ResetLinkActivation(UserPassesTestMixin, CreateView):
 		message to be seen by user else it will redirect to login page.
 		"""
 		return authorize_view_profile_check(self.kwargs['user_id'])
-		
+
 	def get_login_url(self):
 		try:  
 			profile = Profile.objects.get(user_id=self.kwargs['user_id'])
@@ -78,13 +77,13 @@ class ResetLinkActivation(UserPassesTestMixin, CreateView):
 				return HttpResponseRedirect(reverse('accounts:verified'))
 			else:
 				profile.verify_key = profile_validation_key(profile.user.email)
-				profile.expire_date = timezone.now() + datetime.timedelta(days=3)
+				profile.expire_date = timezone.now() + datetime.timedelta(seconds=30)
 				profile.save()
 				account_validation_email(profile.user.name, profile.user.email, profile.verify_key)
 		except ObjectDoesNotExist:
 			return HttpResponseRedirect(reverse('accounts:account-error'))
 		except:
-			return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
+			return HttpResponseRedirect(reverse('accounts:link-reset', args=[profile.user_id]))
 		return HttpResponseRedirect(reverse('accounts:activation-sent'))
 
 
@@ -98,7 +97,6 @@ class ActivationLinkSentMessage(UserPassesTestMixin, TemplateView):
 		"""
 		return authorized_view_session_check(self.request.session['active'])
 		
-
 class VerifiedAccountMessage(UserPassesTestMixin, TemplateView):
 	template_name = 'accounts/verified_account.html'
 	def test_func(self):

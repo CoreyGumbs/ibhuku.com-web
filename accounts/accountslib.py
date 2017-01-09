@@ -24,7 +24,19 @@ def profile_validation_key(user_key):
 	verification = ''.join(signed_value.split(':')[1:])
 	return verification
 
+def check_profile_validation_key(user_email, user_key):
+	"""
+	Checks generated profile_validation_key() against user account email and saved 'verify_key' in the Profiles model.
+	Unsigns the verify_key data in Profile model and returns the confirming key.
+	"""
+	signer = Signer(salt= settings.USER_SALT)
+	check_key = signer.unsign('{0}:{1}'.format(user_email, user_key))
+	return check_key
+
 def account_validation_email(name, email, key):
+	"""
+	Generates an account confirmation email upon user account creation. 
+	"""
 	user_context = {
 			'name': name,
 			'email': email,
@@ -36,7 +48,6 @@ def account_validation_email(name, email, key):
 	msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
 	msg.attach_alternative(html_content, "text/html")
 	msg.send()
-
 
 def authorized_view_session_check(valid_session):
 	try:

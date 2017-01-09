@@ -33,6 +33,8 @@ class TestModelFixtures(TestCase):
 		cls.user.password = make_password(cls.user.password, salt='jRkSlAw7KZ')
 		cls.user.save()
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
+		cls.profile.verify_key = profile_validation_key(cls.user.email)
+		cls.profile.save()
 
 class TestProfileValidationAndCheckKeyFunctions(TestModelFixtures):
 	"""
@@ -201,32 +203,14 @@ class TestAcccountActivationView(TestModelFixtures):
 		self.assertEqual(response.resolver_match.func.__name__, AccountErrorMessage.as_view().__name__, msg="Should match correct url/view name")
 
 	def test_account_verification_view_new_account_verfied_redirect(self):
-		self.profile.verify_key = profile_validation_key(self.user.email)
-		self.profile.save()
 		response = self.client.get(reverse('accounts:activation', kwargs={'verify_key': self.profile.verify_key}))
 		self.assertEqual(response.status_code, 302, msg='return page is working')
 		self.assertEqual(response.resolver_match.kwargs, {'verify_key': self.profile.verify_key}, msg='Should match passed parameters')
 		self.assertRedirects(response, '/accounts/verified/')
+		self.assertEqual(response.resolver_match.func, AccountActivation, msg="Should match correct url/view name")
 
-
-
-# class ActivationLinkResetTest(TestCase):
-# 	@classmethod
-# 	def setUpTestData(cls):
-# 		cls.user = IbkUser.objects.create(email = "johndoe@test.com", name="John Doe", username="JohnnyBread", password="12345")
-# 		cls.profile = Profile.objects.get(user_id=cls.user.id)
-# 		cls.profile.verified = False
-# 		cls.profile.save()
-
-# 	def test_reset_page_verfified_exists(self):
-# 		response = self.client.get('/accounts/reset/{0}'.format(self.profile.user_id))
-# 		html = response.content.decode('utf8')
-# 		self.assertIn('<title>Reset Activation Link</title>', html)
-# 		self.assertEqual(response.status_code, 200)
-
-# 	def test_profile_is_verified(self):
-# 		self.profile.verified = True
-# 		self.profile.key_value = 'expired'
-# 		self.profile.save()
-# 		self.assertTrue(self.profile.verified, True)
-# 		self.assertEqual('expired', self.profile.key_value)
+	def test_account_verification_wrong_validaition_code_verification(self):
+		response = self.client.get(reverse('accounts:activation', kwargs={'verify_key': 'SDNqhfvUo2dpElp6gnfGLxTO6XM'}))
+		self.assertEqual(response.status_code, 302, msg='Should redirect to error page if key not same')
+		self.assertRedirects(response, '/accounts/error/')
+		self.assertNotEqual(self.profile.verify_key, 'SDNqhfvUo2dpElp6gnfGLxTO6XM')

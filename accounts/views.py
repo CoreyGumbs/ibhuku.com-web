@@ -41,13 +41,11 @@ def AccountActivation(request, verify_key):
 			return HttpResponseRedirect(reverse('accounts:verified'))
 	except ObjectDoesNotExist:
 		try:
-			profile = Profile.objects.get(verify_key='expired')
+			profile = Profile.objects.get(verify_key=verify_key)
 			if profile.verify_key == 'expired':
 				return HttpResponseRedirect(reverse('accounts:verified'))
 		except:
 			return HttpResponseRedirect(reverse('accounts:account-error'))
-	except:
-		return HttpResponseRedirect(reverse('accounts:verified'))
 	return HttpResponseRedirect(reverse('accounts:link-reset', args=[profile.user_id]))
 
 class ResetLinkActivation(UserPassesTestMixin, CreateView):

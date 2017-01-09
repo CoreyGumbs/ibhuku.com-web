@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^register/$', AccountSignUp.as_view(), name='register'),
     url(r'^activation/$', RedirectView.as_view(url=reverse_lazy('accounts:account-error')), name='active-error'),
     url(r'^activation/(?P<verify_key>[\w@.:]+[\w])/$', AccountActivation, name='activation'),
-    url(r'^reset/$', RedirectView.as_view(url=reverse_lazy('accounts:account-error')), name='reset'),
+    url(r'^reset/$', RedirectView.as_view(url=reverse_lazy('accounts:account-error')), name='reset-error'),
     url(r'^reset/(?P<user_id>\d+)/$', ResetLinkActivation.as_view(), name='link-reset'),
     url(r'^sent/$', ActivationLinkSentMessage.as_view(), name='activation-sent'),
     url(r'^verified/$', VerifiedAccountMessage.as_view(), name='verified'),

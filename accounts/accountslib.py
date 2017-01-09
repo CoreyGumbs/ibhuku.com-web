@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Copyright (C) Corey Gumbs
+Copyright (C) 2017 Corey Gumbs
 AcountsLib or Accounts Library contains helper methods 
 used in the accounts application. These helpers are used mainly
 in the views business logic. 

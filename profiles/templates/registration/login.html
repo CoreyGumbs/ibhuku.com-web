@@ -2,7 +2,7 @@
 {%load staticfiles%}
 {% load crispy_forms_tags%}
 
-{%block profile_title%}Ibhuku Member Login{%endblock profile_title%}
+{%block profile_title%}Ibhuku Login{%endblock profile_title%}
 {%block account_css%}
 
 {%endblock account_css%}
@@ -13,7 +13,7 @@
 			<div class="page-header text-info text-center">
 				<h2>Login </h2>
 			</div>
-
+			{% crispy form form.helper %}
 		</div>
 	</div>
 {%endblock profile_body%}

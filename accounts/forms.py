@@ -24,8 +24,11 @@ class IbkUserSignUpForm(ModelForm):
 
 	def clean_password(self):
 		password = self.cleaned_data.get('password')
-		password_hashed =  make_password(password, salt='jRkSlAw7KZ')
-		return password_hashed
+		if len(password) < 8:
+			raise forms.ValidationError('Please enter at least 8 characters.')
+		else:
+			password_hashed =  make_password(password, salt='jRkSlAw7KZ')
+			return password_hashed
 
 	def __init__(self, *args, **kwargs):
 		super(IbkUserSignUpForm, self).__init__(*args, **kwargs)

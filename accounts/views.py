@@ -46,6 +46,8 @@ def AccountActivation(request, verify_key):
 				return HttpResponseRedirect(reverse('accounts:verified'))
 		except:
 			return HttpResponseRedirect(reverse('accounts:account-error'))
+	except:
+			return HttpResponseRedirect(reverse('accounts:account-error'))
 	return HttpResponseRedirect(reverse('accounts:link-reset', args=[profile.user_id]))
 
 class ResetLinkActivation(UserPassesTestMixin, CreateView):
@@ -79,11 +81,12 @@ class ResetLinkActivation(UserPassesTestMixin, CreateView):
 				profile.save()
 				account_validation_email(profile.user.name, profile.user.email, profile.verify_key)
 		except ObjectDoesNotExist:
-			return HttpResponseRedirect(reverse('accounts:account-error'))
+			profile = Profile.objects.get(user_id=self.kwargs['user_id'])
+			if not profile.verified:
+				return HttpResponseRedirect(reverse('accounts:account-error'))
 		except:
 			return HttpResponseRedirect(reverse('accounts:link-reset', args=[profile.user_id]))
 		return HttpResponseRedirect(reverse('accounts:activation-sent'))
-
 
 class ActivationLinkSentMessage(UserPassesTestMixin, TemplateView):
 	template_name = 'accounts/activation_sent.html'

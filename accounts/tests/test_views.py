@@ -3,9 +3,8 @@ import time
 
 from django.conf import settings
 from django.core.signing import Signer
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.hashers import make_password, check_password
-from django.test import TestCase, Client, RequestFactory
+from django.test import TestCase, Client
 from django.core.urlresolvers import reverse, resolve
 from django.views.generic.base import RedirectView
 
@@ -14,14 +13,12 @@ from accounts.models import IbkUser, Profile
 from ..views import *
 
 
-
 class TestModelFixtures(TestCase):
 	"""
 	Sets up user data fixtures for testing account models. Test will inherit from this class all
 	pre-created user data.
 	"""
 	def setUp(self):
-		self.factory = RequestFactory()
 		self.client = Client()
 		self.session = self.client.session
 		self.session['active'] =  True
@@ -167,7 +164,6 @@ class TestAccountErrorMessageView(TestCase):
 		html = response.content.decode('utf8')
 		self.assertTemplateUsed('accounts/account_error.html')
 		self.assertIn('<title>Account Error</title>', html)
-
 
 class TestResetLinkActivationView(TestModelFixtures):
 	"""

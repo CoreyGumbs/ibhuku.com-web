@@ -10,7 +10,7 @@ from crispy_forms.bootstrap import FormActions, PrependedText
 
 from accounts.models import IbkUser, Profile
 
-class AccountLogInForm(AuthenticationForm):
+class LogInForm(AuthenticationForm):
 	class Meta:
 		model = IbkUser
 		fields = ('username', 'password')
@@ -20,7 +20,7 @@ class AccountLogInForm(AuthenticationForm):
 		}
 
 	def __init__(self, *args, **kwargs):
-		super(AccountLogInForm, self).__init__(*args, *kwargs)
+		super(LogInForm, self).__init__(*args, **kwargs)
 		self.helper = FormHelper()
 		self.helper.form_id = 'loginForm'
 		self.helper.form_method = 'post'

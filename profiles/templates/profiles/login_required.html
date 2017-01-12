@@ -1,0 +1,25 @@
+{% extends "profiles/base.html" %}
+{%load staticfiles%}
+
+{%block profile_title%}Access Denied. Please login for access.{%endblock profile_title%}
+{%block scripts%}
+	<script>
+  		window.setTimeout(function(){
+    		window.location.href = "{% url 'profiles:login' %}";
+  		}, 5000);
+	</script>
+{%endblock scripts%}
+{%block profile_body%}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="col-md-12  page-header text-danger text-center">
+				<h2>Access Denied. Please Login.</h2>
+			</div>
+			<div class="col-md-12 well lead text-center">
+				<p>You must login to access your account profile.</p>
+				<p>You will be redirected to login to your account.</p>
+			</div>
+			<p class="small text-center">If this page does not redirect in 5 seconds. Please <a href="{%url 'profiles:login' %}">click here</a>.</p>
+		</div>
+	</div>
+{%endblock profile_body%}

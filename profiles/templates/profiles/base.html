@@ -3,19 +3,20 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>{%block account_title%}Accounts{%endblock account_title%}</title>
+		<title>{%block profile_title%}Profiles{%endblock profile_title%}</title>
 		<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-		{%block account_css%}{%endblock account_css%}
+		{%block profiles_css%}{%endblock profiles_css%}
+		{%block scripts%}{%endblock scripts%}
 	</head>
 	<body>
-		{% include 'nav/nav.html' %}
+		{% include 'nav/nav.html'%}
 		<div class="container">
 			<div class="row">
 				<div class="col-md-12">
-					{% block account_body %}
+					{% block profile_body %}
 					
-					{% endblock account_body %}
+					{% endblock profile_body %}
 				</div>
 			</div>
 		</div>

@@ -1,6 +1,3 @@
-import hashlib
-import os
-
 from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +11,6 @@ from .models import IbkUser, Profile
 
 
 class IbkUserSignUpForm(ModelForm):
-	
 
 	class Meta:
 		model = IbkUser
@@ -28,8 +24,11 @@ class IbkUserSignUpForm(ModelForm):
 
 	def clean_password(self):
 		password = self.cleaned_data.get('password')
-		password_hashed =  make_password(password, salt=hashlib.sha1(os.urandom(16)).hexdigest())
-		return password_hashed
+		if len(password) < 8:
+			raise forms.ValidationError('Please enter at least 8 characters.')
+		else:
+			password_hashed =  make_password(password, salt='jRkSlAw7KZ')
+			return password_hashed
 
 	def __init__(self, *args, **kwargs):
 		super(IbkUserSignUpForm, self).__init__(*args, **kwargs)

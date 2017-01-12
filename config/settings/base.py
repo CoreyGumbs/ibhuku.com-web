@@ -51,12 +51,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'crispy_forms',
     'accounts',
-    'profiles',
 ]
 
 AUTH_USER_MODEL = 'accounts.IbkUser'
 
-LOGIN_URL = 'profiles:login'
+LOGIN_URL = ''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

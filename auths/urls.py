@@ -1,5 +1,7 @@
 from django.conf.urls import include, url
 
-urlpatterns = [
+from .views import *
 
+urlpatterns = [
+	url(r'login/^$', LoginView, name='login')
 ]

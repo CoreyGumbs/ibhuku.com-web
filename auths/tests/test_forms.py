@@ -33,8 +33,19 @@ class TestLoginAuthenticationForm(TestData):
 		self.form = LoginAuthenticationForm(data=self.data)
 		self.assertIs(self.form.is_bound, True)
 
+	def test_form_not_valid(self):
+		self.form = LoginAuthenticationForm(data={})
+		self.assertIs(self.form.is_valid(), False)
+
 	def test_form_is_valid(self):
 		self.form = LoginAuthenticationForm(data=self.data)
-		print(self.form.errors)
-		print(self.form.cleaned_data['password'])
 		self.assertIs(self.form.is_valid(), True)
+
+	def test_form_html(self):
+		response = self.client.get('/auths/login/')
+		html = response.content.decode('utf8')
+		self.assertIn('password', html)
+
+	def test_form_errors(self):
+		self.form = LoginAuthenticationForm(data={'username': '', 'password': ''})
+		self.assertIn('password', self.form.errors)

@@ -17,6 +17,10 @@ class TestModelFixtures(TestCase):
 		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 		cls.profile.save()
+		cls.data = {
+			'username': cls.user.email,
+			'password': cls.user.password
+		}
 
 class TestLoginAuthenticationForm(TestModelFixtures):
 	"""
@@ -29,9 +33,5 @@ class TestLoginAuthenticationForm(TestModelFixtures):
 		self.assertIs(self.form.is_bound, False)
 
 	def test_form_is_bound(self):
-		data = {
-			'username': self.user.email,
-			'password': self.user.password
-		}
-		self.form = LoginAuthenticationForm(data=data)
+		self.form = LoginAuthenticationForm(data=self.data)
 		self.assertIs(self.form.is_bound, True)

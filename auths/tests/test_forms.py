@@ -1,16 +1,16 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 
 from accounts.models import IbkUser, Profile
 from auths.forms import LoginAuthenticationForm
 # Create your tests here.
 
-class TestModelFixtures(TestCase):
+class TestData(TestCase):
 	"""
-	Sets up user data fixtures for testing account models. Test will inherit from this class all
-	pre-created user data.
+	Sets up user data fixtures for testing.
 	"""
 	def setUp(self):
 		self.client = Client()
+		self.form = LoginAuthenticationForm()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -22,16 +22,19 @@ class TestModelFixtures(TestCase):
 			'password': cls.user.password
 		}
 
-class TestLoginAuthenticationForm(TestModelFixtures):
+class TestLoginAuthenticationForm(TestData):
 	"""
 	Test Ibhuku Account Login Form
 	"""
-	def setUp(self):
-		self.form = LoginAuthenticationForm()
-
 	def test_form_is_un_bound(self):
 		self.assertIs(self.form.is_bound, False)
 
 	def test_form_is_bound(self):
 		self.form = LoginAuthenticationForm(data=self.data)
 		self.assertIs(self.form.is_bound, True)
+
+	def test_form_is_valid(self):
+		self.form = LoginAuthenticationForm(data=self.data)
+		print(self.form.errors)
+		print(self.form.cleaned_data['password'])
+		self.assertIs(self.form.is_valid(), True)

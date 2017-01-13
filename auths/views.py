@@ -6,6 +6,6 @@ from .forms import LoginAuthenticationForm
 # Create your views here.
 def LoginView(request):
 	context = {
-		'form': 'form'
+		'form': 'form',
 	}
 	return render(request, 'auths/login.html', context)

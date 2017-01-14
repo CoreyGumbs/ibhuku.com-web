@@ -11,12 +11,20 @@ from accounts.models import IbkUser, Profile
 class LoginAuthenticationForm(forms.Form):
 	email = forms.EmailField(label='Email', required=True)
 	password = forms.CharField(label='Password', required=True)
-	
+
 	class Meta:
 		widgets = {
 			'email': forms.TextInput(attrs={'id': 'login_username'}),
 			'password': forms.PasswordInput(attrs={'id': 'login_password', 'placeholder': ' Enter Password'})
 		}
+
+	def clean(self):
+		cleaned_data = super(LoginAuthenticationForm, self).clean()
+		email = cleaned_data.get('email')
+		try:
+			IbkUser.objects.get(email=email)
+		except IbkUser.DoesNotExist:
+			raise forms.ValidationError("The username or password you entered is incorrect.")
 
 	def __init__(self, *args, **kwargs):
 		super(LoginAuthenticationForm, self).__init__(*args, **kwargs)

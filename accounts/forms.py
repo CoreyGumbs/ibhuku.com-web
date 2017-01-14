@@ -25,7 +25,7 @@ class IbkUserSignUpForm(ModelForm):
 	def clean_password(self):
 		password = self.cleaned_data.get('password')
 		if len(password) < 8:
-			raise forms.ValidationError('Please enter at least 8 characters.')
+			raise forms.ValidationError('Password must be at least 8 characters.')
 		else:
 			password_hashed =  make_password(password, salt='jRkSlAw7KZ')
 			return password_hashed

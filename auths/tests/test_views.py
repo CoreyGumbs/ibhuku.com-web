@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile
@@ -25,9 +26,11 @@ class LoginView(TestCase):
 		response = self.client.get('/auths/login/')
 		self.assertTemplateUsed(response, 'auths/login.html')
 
-	def test_viw_context(self):
+	def test_view_context(self):
 		response = self.client.get('/auths/login/')
 		self.assertEqual(response.context['form'], 'form')
+
+
 
 
 

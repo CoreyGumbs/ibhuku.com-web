@@ -24,7 +24,7 @@ class LoginAuthenticationForm(forms.Form):
 		try:
 			IbkUser.objects.get(email=email)
 		except IbkUser.DoesNotExist:
-			raise forms.ValidationError("The username or password you entered is incorrect.")
+			raise forms.ValidationError("The email or password you entered is incorrect.")
 
 	def __init__(self, *args, **kwargs):
 		super(LoginAuthenticationForm, self).__init__(*args, **kwargs)
@@ -32,8 +32,8 @@ class LoginAuthenticationForm(forms.Form):
 		self.helper.form_id = 'loginForm'
 		self.helper.form_method = 'post'
 		self.helper.layout = Layout(
-				PrependedText('email', "<span class='glyphicon glyphicon-envelope'></span>", placeholder="Email", active=True),
-				PrependedText('password', "<span class='glyphicon glyphicon-lock'></span>", placeholder="Password", active=True),
+				PrependedText('email', "<span class='glyphicon glyphicon-envelope'></span>", active=True),
+				PrependedText('password', "<span class='glyphicon glyphicon-lock'></span>", active=True),
 				FormActions(
 					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
 					),

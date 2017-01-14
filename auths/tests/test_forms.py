@@ -49,7 +49,6 @@ class TestLoginAuthenticationForm(TestData):
 		self.form = LoginAuthenticationForm(data={'email': '', 'password': ''})
 		self.assertIn('password', self.form.errors)
 
-
 	def test_form_cleaned_email(self):
 		response = self.client.post('/auths/login/', data={'email': 'johndoe@doe.com', 'password': self.user.password})
 		self.assertFormError(response, 'form', '', 'The username or password you entered is incorrect.')

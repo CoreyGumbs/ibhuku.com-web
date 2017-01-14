@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 
+
 from accounts.models import IbkUser, Profile
 from auths.forms import LoginAuthenticationForm
 # Create your tests here.
@@ -15,10 +16,8 @@ class TestData(TestCase):
 	@classmethod 
 	def setUpTestData(cls):
 		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
-		cls.profile = Profile.objects.get(user_id=cls.user.id)
-		cls.profile.save()
 		cls.data = {
-			'username': cls.user.email,
+			'email': cls.user.email,
 			'password': cls.user.password
 		}
 
@@ -47,5 +46,5 @@ class TestLoginAuthenticationForm(TestData):
 		self.assertIn('password', html)
 
 	def test_form_errors(self):
-		self.form = LoginAuthenticationForm(data={'username': '', 'password': ''})
+		self.form = LoginAuthenticationForm(data={'email': '', 'password': ''})
 		self.assertIn('password', self.form.errors)

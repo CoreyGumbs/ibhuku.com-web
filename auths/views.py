@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from django.core.urlresolvers import reverse, resolve
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login
 
 from .forms import LoginAuthenticationForm
 
@@ -8,7 +10,7 @@ def LoginView(request):
 	if request.POST or None:
 		form = LoginAuthenticationForm(request.POST)
 		if form.is_valid():
-			return HttpResponseRedirect('accounts:index')
+			return HttpResponseRedirect(reverse('accounts:index'))
 	else:
 		form = LoginAuthenticationForm()
 	context = {

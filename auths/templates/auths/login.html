@@ -9,7 +9,8 @@
 
 {%block auths_body%}
 	<div class="row" id="signup-container">
-		<div class="col-md-6 col-md-offset-3">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
 			<div class="page-header text-info text-center">
 				<h2>Login</h2>
 			</div>
@@ -18,8 +19,9 @@
 				Forgot your password? <a href="#">Reset Password</a>
 			</p>
 			<p class="text-center">
-				<small>Don't have an account ? <a href="">Sign up</a></small>
+				<small>Don't have an account ? <a href="{% url 'accounts:register' %}">Sign up</a></small>
 			</p>
+			<div class="col-md-4"></div>
 		</div>
 	</div>
 {%endblock auths_body%}

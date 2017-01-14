@@ -52,3 +52,6 @@ class TestLoginAuthenticationForm(TestData):
 	def test_form_cleaned_email(self):
 		response = self.client.post('/auths/login/', data={'email': 'johndoe@doe.com', 'password': self.user.password})
 		self.assertFormError(response, 'form', '', 'The username or password you entered is incorrect.')
+
+	def test_create_account_link(self):
+		response = self.client.get('/auths/login/')

@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-
+from django.contrib.auth import authenticate, login
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile

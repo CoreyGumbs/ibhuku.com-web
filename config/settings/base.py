@@ -54,9 +54,10 @@ INSTALLED_APPS = [
     'auths',
 ]
 
+LOGIN_URL = 'auths:login'
+
 AUTH_USER_MODEL = 'accounts.IbkUser'
 
-LOGIN_URL = 'auths:login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

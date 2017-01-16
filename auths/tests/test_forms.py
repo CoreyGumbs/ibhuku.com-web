@@ -1,11 +1,12 @@
 from django.test import TestCase, Client
+from django.contrib.auth import get_user_model
 
 
 from accounts.models import IbkUser, Profile
 from auths.forms import LoginAuthenticationForm
 # Create your tests here.
 
-class TestData(TestCase):
+class TestDataFixture(TestCase):
 	"""
 	Sets up user data fixtures for testing.
 	"""
@@ -17,11 +18,11 @@ class TestData(TestCase):
 	def setUpTestData(cls):
 		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
 		cls.data = {
-			'email': cls.user.email,
+			'username': cls.user.email,
 			'password': cls.user.password
 		}
 
-class TestLoginAuthenticationForm(TestData):
+class TestLoginAuthenticationForm(TestDataFixture):
 	"""
 	Test Ibhuku Account Login Form
 	"""
@@ -37,8 +38,11 @@ class TestLoginAuthenticationForm(TestData):
 		self.assertIs(self.form.is_valid(), False)
 
 	def test_form_is_valid(self):
-		self.form = LoginAuthenticationForm(data=self.data)
-		self.assertIs(self.form.is_valid(), True)
+		form = LoginAuthenticationForm(None, self.data)
+		print(form.data['username'])
+		print(form.is_valid())
+		self.assertIs(form.is_valid(), True)
+		self.assertEqual(form.data['username'], self.user.email)
 
 	def test_form_html(self):
 		response = self.client.get('/auths/login/')
@@ -46,12 +50,13 @@ class TestLoginAuthenticationForm(TestData):
 		self.assertIn('password', html)
 
 	def test_form_errors(self):
-		self.form = LoginAuthenticationForm(data={'email': '', 'password': ''})
-		self.assertIn('password', self.form.errors)
+		response = self.client.post('/auths/login/', {'username': '', 'password': ''})
+		self.assertFormError(response, 'form', 'username', ['This field is required.'])
+		self.assertFormError(response, 'form', 'password', ['This field is required.'])
 
-	def test_form_cleaned_email(self):
-		response = self.client.post('/auths/login/', data={'email': 'johndoe@doe.com', 'password': self.user.password})
-		self.assertFormError(response, 'form', '', 'The username or password you entered is incorrect.')
+	def test_form_incorrect_account_errors(self):
+		response = self.client.post('/auths/login/', {'username': 'testing@whatif.com', 'password': 'runforestrun'})
+		self.assertFormError(response, 'form', None, 'Please enter a correct email and password. Note that both fields may be case-sensitive.')
 
 	def test_create_account_link(self):
 		response = self.client.get('/auths/login/')

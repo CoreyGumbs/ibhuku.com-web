@@ -25,3 +25,4 @@ class TestEmailAuthenticationBackEnd(TestDataFixture):
 		backend = EmailLoginBackend()
 		my_user = backend.authenticate(email='coreygumbs@gmail.com', password='password')
 		
+		

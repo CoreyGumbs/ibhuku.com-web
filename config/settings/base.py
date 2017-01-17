@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 ]
 
 LOGIN_URL = 'auths:login'
+LOGIN_REDIRECT_URL = 'accounts:index'
 
 AUTH_USER_MODEL = 'accounts.IbkUser'
 

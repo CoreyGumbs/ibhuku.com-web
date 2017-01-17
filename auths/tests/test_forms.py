@@ -16,7 +16,7 @@ class TestDataFixture(TestCase):
 
 	@classmethod 
 	def setUpTestData(cls):
-		cls.user = IbkUser.objects.create(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
+		cls.user = IbkUser.objects.create_user(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
 		cls.data = {
 			'username': cls.user.email,
 			'password': cls.user.password
@@ -38,9 +38,7 @@ class TestLoginAuthenticationForm(TestDataFixture):
 		self.assertIs(self.form.is_valid(), False)
 
 	def test_form_is_valid(self):
-		form = LoginAuthenticationForm(None, self.data)
-		print(form.data['username'])
-		print(form.is_valid())
+		form = LoginAuthenticationForm(data=self.data)
 		self.assertIs(form.is_valid(), True)
 		self.assertEqual(form.data['username'], self.user.email)
 
@@ -58,5 +56,3 @@ class TestLoginAuthenticationForm(TestDataFixture):
 		response = self.client.post('/auths/login/', {'username': 'testing@whatif.com', 'password': 'runforestrun'})
 		self.assertFormError(response, 'form', None, 'Please enter a correct email and password. Note that both fields may be case-sensitive.')
 
-	def test_create_account_link(self):
-		response = self.client.get('/auths/login/')

@@ -1,0 +1,27 @@
+{% extends "auths/base.html" %}
+{%load staticfiles%}
+{% load crispy_forms_tags%}
+
+{%block auths_title%}Recover Account{%endblock auths_title%}
+{%block auths_css%}
+	
+{%endblock auths_css%}
+
+{%block auths_body%}
+	<div class="row" id="signup-container">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<div class="page-header text-info text-center">
+				<h2>Recover Account</h2>
+			</div>
+			
+			<p class="text-center">
+				Forgot your password? <a href="#">Reset Password</a>
+			</p>
+			<p class="text-center">
+				<small>Don't have an account ? <a href="{% url 'accounts:register' %}">Sign up</a></small>
+			</p>
+			<div class="col-md-4"></div>
+		</div>
+	</div>
+{%endblock auths_body%}

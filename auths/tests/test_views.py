@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile
+from auths.views import AccountRecover
 
 # Create your tests here.
 
@@ -50,5 +51,25 @@ class LoginView(TestDataFixture):
 		response = self.client.post('/auths/login/', {'username':'mctest@test.com', 'password':'password12345'}, follow=True)
 		self.assertRedirects(response, '/accounts/register/')
 
+class AccountRecover(TestDataFixture):
+	"""
+	Test Password Reset View
+	"""
+	def test_account_recover_url(self):
+		response = self.client.get('/auths/recover/')
+		self.assertEqual(response.status_code, 200)
 
+	def test_account_recover_html(self):
+		response =self.client.get('/auths/recover/')
+		html = response.content.decode('utf8')
+		self.assertIn('<title>Recover Account</title>', html)
+
+	def test_account_recover_template(self):
+		response = self.client.get('/auths/recover/')
+		self.assertTemplateUsed(response, 'auths/recover.html')
+
+	def test_account_recover_view(self):
+		response = self.client.get('/auths/recover/')
+		self.assertEqual(response.resolver_match.func.__name__, 'AccountRecover')
+		
 

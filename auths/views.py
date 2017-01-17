@@ -6,5 +6,5 @@ from django.contrib.auth import authenticate, login
 from .forms import LoginAuthenticationForm
 
 # Create your views here.
-def LoginView(request):
-	return render(request, 'auths/login.html', context)
+def AccountRecover(request):
+	return render(request, 'auths/recover.html')

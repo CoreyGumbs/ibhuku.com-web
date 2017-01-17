@@ -38,7 +38,7 @@ class TestLoginAuthenticationForm(TestDataFixture):
 		self.assertIs(self.form.is_valid(), False)
 
 	def test_form_is_valid(self):
-		form = LoginAuthenticationForm(data=self.data)
+		form = LoginAuthenticationForm(data={'username':'mctest@test.com', 'password': 'password12345'})
 		self.assertIs(form.is_valid(), True)
 		self.assertEqual(form.data['username'], self.user.email)
 

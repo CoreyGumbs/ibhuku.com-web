@@ -4,5 +4,6 @@ from .views import LoginView
 
 from .forms import LoginAuthenticationForm
 urlpatterns = [
-	url(r'^login/$', auth_views.login,{'template_name': 'auths/login.html', 'authentication_form': LoginAuthenticationForm}, name='login')
+	url(r'^login/$', auth_views.login,{'template_name': 'auths/login.html', 'authentication_form': LoginAuthenticationForm}, name='login'),
+	url(r'^$', auth_views.logout,{'next_page': '/auths/login/'}, name='logout'),
 ]

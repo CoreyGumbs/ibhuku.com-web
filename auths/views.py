@@ -3,12 +3,9 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_protect
 from django.core.urlresolvers import reverse, resolve
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.views.generic.edit import FormView
 
 
 from accounts.models import IbkUser, Profile
@@ -43,4 +40,4 @@ def AccountRecover(request):
 	return render(request, 'auths/recover.html', context)
 
 def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=default_token_generator):
-	return HttpResponse("Comfirmed Account")
+	return HttpResponse('<title>Password Reset</title>')

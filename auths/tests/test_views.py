@@ -1,11 +1,13 @@
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
-
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile
-from auths.views import AccountRecover
+from auths.views import AccountRecover, AccountResetLinkConfirm
 from auths.authlib import ValidateEmail
 
 # Create your tests here.
@@ -21,6 +23,11 @@ class TestDataFixture(TestCase):
 	@classmethod 
 	def setUpTestData(cls):
 		cls.user = IbkUser.objects.create_user(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
+		cls.user_token = default_token_generator.make_token(cls.user)
+		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
+		cls.profile = Profile.objects.get(user_id=cls.user.id)
+		cls.profile.verify_key = cls.user_token
+		cls.profile.save()
 
 class LoginView(TestDataFixture):
 	"""
@@ -81,4 +88,22 @@ class AccountRecover(TestDataFixture):
 
 	def test_user_exists(self):
 		response = self.client.post('/auths/recover/', {'email': 'mctest@test.com'})
+
+class AccountResetLinkConfirm(TestDataFixture):
+	"""
+	Test Password Link Confirmation View
+	"""
+	def test_link_confirm_view_url(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
+		self.assertEqual(response.status_code, 200)
+
+	def test_link_confirm_view(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
+		self.assertEqual(response.resolver_match.func.__name__, 'AccountResetLinkConfirm')
+
+	def test_link_confirm_view_html(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
+		html = response.content.decode('utf8')
+		self.assertIn('<title>Password Reset</title>', html)
+
 

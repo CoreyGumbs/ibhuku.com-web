@@ -14,10 +14,7 @@
 			<div class="page-header text-info text-center">
 				<h2>Recover Account</h2>
 			</div>
-			
-			<p class="text-center">
-				Forgot your password? <a href="#">Reset Password</a>
-			</p>
+			{% crispy form form.helper %}
 			<p class="text-center">
 				<small>Don't have an account ? <a href="{% url 'accounts:register' %}">Sign up</a></small>
 			</p>

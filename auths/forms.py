@@ -1,5 +1,6 @@
 from django.forms import ModelForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
+from django.core.validators import validate_email
 from django import forms
 
 from crispy_forms.helper import FormHelper
@@ -25,3 +26,17 @@ class LoginAuthenticationForm(AuthenticationForm):
 					),
 			)
 
+class AccountRecoveryForm(forms.Form):
+	email = forms.EmailField(label='Email', max_length=255, required=True)
+		
+	def __init__(self, *args, **kwargs):
+		super(AccountRecoveryForm, self).__init__(*args, **kwargs)
+		self.helper = FormHelper()
+		self.helper.form_id = 'recoveryForm'
+		self.helper.form_method = 'post'
+		self.helper.layout = Layout(
+				PrependedText('email', "<span class='glyphicon glyphicon-envelope'></span>", active=True),
+				FormActions(
+					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
+					),
+			)

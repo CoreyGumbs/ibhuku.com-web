@@ -141,7 +141,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = get_secret('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
+PASSWORD_RESET_TIMEOUT_DAYS = 7
+
+# EMAIL_HOST = 'smtp.sendgrid.net'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = get_secret('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = get_secret('EMAIL_HOST_PASSWORD')
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'Ibhuku Team <noreply@Ibhuku.com>'

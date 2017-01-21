@@ -1,10 +1,12 @@
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
+
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile
 from auths.views import AccountRecover
+from auths.authlib import ValidateEmail
 
 # Create your tests here.
 
@@ -14,6 +16,7 @@ class TestDataFixture(TestCase):
 	"""
 	def setUp(self):
 		self.client = Client()
+		self.factory = RequestFactory()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -71,5 +74,11 @@ class AccountRecover(TestDataFixture):
 	def test_account_recover_view(self):
 		response = self.client.get('/auths/recover/')
 		self.assertEqual(response.resolver_match.func.__name__, 'AccountRecover')
-		
+
+	def test_account_recover_context(self):
+		response = self.client.get('/auths/recover/')
+		self.assertIn('Email:' , str(response.context['form']))
+
+	def test_user_exists(self):
+		response = self.client.post('/auths/recover/', {'email': 'mctest@test.com'})
 

@@ -5,6 +5,11 @@
 {%block account_title%}Sign-Up!{%endblock account_title%}
 {%block account_css%}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/account_styles.css' %}">
+	<script>
+  		window.setTimeout(function(){
+    		window.location.href = "{% url 'auths:login' %}";
+  		}, 3000);
+	</script>
 {%endblock account_css%}
 
 {%block account_body%}

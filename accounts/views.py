@@ -77,7 +77,7 @@ class ResetLinkActivation(UserPassesTestMixin, CreateView):
 				return HttpResponseRedirect(reverse('accounts:verified'))
 			else:
 				profile.verify_key = profile_validation_key(profile.user.email)
-				profile.expire_date = timezone.now() + datetime.timedelta(seconds=30)
+				profile.expire_date = timezone.now() + datetime.timedelta(days=3)
 				profile.save()
 				account_validation_email(profile.user.name, profile.user.email, profile.verify_key)
 		except ObjectDoesNotExist:

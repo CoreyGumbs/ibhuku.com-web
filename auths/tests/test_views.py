@@ -106,4 +106,12 @@ class AccountResetLinkConfirm(TestDataFixture):
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Password Reset</title>', html)
 
+	def test_link_confrim_view_url(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
+		self.assertTemplateUsed(response, 'auths/password_reset_confirm.html')
+
+	def test_link_confirm_context(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
+		self.assertIn('New Password:', str(response.context['form']))
+
 

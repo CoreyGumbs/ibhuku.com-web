@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 
 from accounts.models import IbkUser, Profile
-from auths.forms import LoginAuthenticationForm, AccountRecoveryForm
+from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, PasswordResetForm
 # Create your tests here.
 class TestDataFixture(TestCase):
 	"""
@@ -13,6 +13,7 @@ class TestDataFixture(TestCase):
 		self.client = Client()
 		self.form = LoginAuthenticationForm()
 		self.recovery = AccountRecoveryForm()
+		self.reset = PasswordResetForm()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -63,7 +64,7 @@ class TestAccountRecoverForm(TestDataFixture):
 	def test_recover_form_is_un_bound(self):
 		self.assertIs(self.recovery.is_bound, False)
 
-	def test_recover_form_is_boudnd(self):
+	def test_recover_form_is_bound(self):
 		self.recovery = AccountRecoveryForm(data={'email': self.user.email})
 		self.assertIs(self.recovery.is_bound, True)
 
@@ -91,6 +92,27 @@ class TestAccountRecoverForm(TestDataFixture):
 		self.recoveryform = AccountRecoveryForm(data={'email': self.user.email})
 		self.assertTrue(self.recoveryform.is_valid())
 		self.assertEqual(self.recoveryform.clean(), {'email': self.user.email})
+
+class TestPasswordResetForm(TestDataFixture):
+	"""
+	Test Password Reset Form
+	"""
+	def test_reset_password_is_un_bound_and_not_valid(self):
+		self.assertIs(self.reset.is_bound, False)
+		self.assertIs(self.reset.is_valid(), False)
+
+	def test_reset_password_is_bound_and_valid(self):
+		self.reset = PasswordResetForm(data={'new_password': 'testpassword', 'confrim_new_password': 'testpassword'})
+		self.assertIs(self.reset.is_bound, True)
+		self.assertIs(self.reset.is_valid(), True)
+
+	def test_reset_form_errors(self):
+		response = self.client.post('/auths/reset/', {'new_password': '', 'confrim_new_password': ''})
+		self.assertFormError(response, 'form', 'new_password', [''] )
+
+
+
+
 
 
 

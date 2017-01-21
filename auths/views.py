@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from accounts.models import IbkUser, Profile
 from accounts.accountslib import profile_validation_key, check_profile_validation_key
 from auths.authlib import password_reset_link
-from .forms import LoginAuthenticationForm, AccountRecoveryForm
+from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, PasswordResetForm
 
 # Create your views here.
 @csrf_protect
@@ -40,4 +40,8 @@ def AccountRecover(request):
 	return render(request, 'auths/recover.html', context)
 
 def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=default_token_generator):
-	return HttpResponse('<title>Password Reset</title>')
+	form = PasswordResetForm(request.POST)
+	context = {
+		'form': form,
+	}
+	return render(request, 'auths/password_reset_confirm.html', context)

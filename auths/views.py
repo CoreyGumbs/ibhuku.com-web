@@ -5,13 +5,14 @@ from django.core.urlresolvers import reverse, resolve
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_text
+from django.template.response import TemplateResponse
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 
 from accounts.models import IbkUser, Profile
 from accounts.accountslib import profile_validation_key, check_profile_validation_key
 from auths.authlib import password_reset_link
-from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, PasswordResetForm
+from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, UserPasswordResetForm
 
 # Create your views here.
 @csrf_protect
@@ -40,8 +41,24 @@ def AccountRecover(request):
 	return render(request, 'auths/recover.html', context)
 
 def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=default_token_generator):
-	form = PasswordResetForm(request.POST)
-	context = {
+	try:
+		uid = force_text(urlsafe_base64_decode(uidb64))
+		user = IbkUser.objects.get(pk=uid)
+	except (TypeError, ValueError, OverflowError, IbkUser.DoesNotExist):
+		user = None
+		return HttpResponseRedirect(reverse('accounts:index'))
+
+	if user is not None and token_generator.check_token(user, token):
+		validlink = True
+		if request.method == 'POST':
+			form = UserPasswordResetForm(request.POST)
+			if form.is_valid(): 
+				return HttpResponseRedirect(reverse('accounts:index'))
+		else:
+			form = UserPasswordResetForm()
+	else:
+		form = None
+	context={
 		'form': form,
 	}
-	return render(request, 'auths/password_reset_confirm.html', context)
+	return TemplateResponse(request, 'auths/password_reset_confirm.html', context)

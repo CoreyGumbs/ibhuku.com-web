@@ -1,9 +1,13 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.core.urlresolvers import reverse
 
 
 from accounts.models import IbkUser, Profile
-from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, PasswordResetForm
+from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, UserPasswordResetForm
 # Create your tests here.
 class TestDataFixture(TestCase):
 	"""
@@ -13,7 +17,7 @@ class TestDataFixture(TestCase):
 		self.client = Client()
 		self.form = LoginAuthenticationForm()
 		self.recovery = AccountRecoveryForm()
-		self.reset = PasswordResetForm()
+		self.reset = UserPasswordResetForm()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -22,6 +26,8 @@ class TestDataFixture(TestCase):
 			'username': cls.user.email,
 			'password': cls.user.password
 		}
+		cls.user_token = default_token_generator.make_token(cls.user)
+		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
 
 class TestLoginAuthenticationForm(TestDataFixture):
 	"""
@@ -102,13 +108,19 @@ class TestPasswordResetForm(TestDataFixture):
 		self.assertIs(self.reset.is_valid(), False)
 
 	def test_reset_password_is_bound_and_valid(self):
-		self.reset = PasswordResetForm(data={'new_password': 'testpassword', 'confrim_new_password': 'testpassword'})
+		self.reset = UserPasswordResetForm(data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 		self.assertIs(self.reset.is_bound, True)
 		self.assertIs(self.reset.is_valid(), True)
 
 	def test_reset_form_errors(self):
-		response = self.client.post('/auths/reset/', {'new_password': '', 'confrim_new_password': ''})
-		self.assertFormError(response, 'form', 'new_password', [''] )
+		self.reset = UserPasswordResetForm(data={'new_password': '', 'confrim_password': ''})
+		self.assertEqual(self.reset['new_password'].errors, ['This field is required.'])
+		self.assertEqual(self.reset['confrim_password'].errors, ['This field is required.'])
+
+	def test_reset_form_password_validation(self):
+		self.reset = UserPasswordResetForm(data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+		self.assertTrue(self.reset.is_valid())
+		self.assertEqual(self.reset.clean(), {'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 
 
 

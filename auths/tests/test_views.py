@@ -93,25 +93,30 @@ class AccountResetLinkConfirm(TestDataFixture):
 	"""
 	Test Password Link Confirmation View
 	"""
-	def test_link_confirm_view_url(self):
+	def test_reset_link_confirm_view_url(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
 		self.assertEqual(response.status_code, 200)
 
-	def test_link_confirm_view(self):
+	def test_reset_link_confirm_view(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
 		self.assertEqual(response.resolver_match.func.__name__, 'AccountResetLinkConfirm')
 
-	def test_link_confirm_view_html(self):
+	def test_reset_link_confirm_view_html(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
 		html = response.content.decode('utf8')
 		self.assertIn('<title>Password Reset</title>', html)
 
-	def test_link_confrim_view_url(self):
+	def test_reset_link_confrim_view_url(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
 		self.assertTemplateUsed(response, 'auths/password_reset_confirm.html')
 
-	def test_link_confirm_context(self):
+	def test_reset_link_confirm_context(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': self.uid, 'token': self.user_token}))
 		self.assertIn('New Password:', str(response.context['form']))
+
+	def test_reset_link_confirm_user_uidb64_error_redirect(self):
+		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': b'MXM', 'token': self.user_token}), follow=True)
+		self.assertRedirects(response, '/accounts/register/')
+
 
 

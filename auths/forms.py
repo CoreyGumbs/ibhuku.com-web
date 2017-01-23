@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.validators import validate_email
 from django.contrib.auth import password_validation
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from django import forms
 
@@ -49,29 +50,42 @@ class AccountRecoveryForm(forms.Form):
 					),
 			)
 
-class PasswordResetForm(forms.Form):
+
+class UserPasswordResetForm(forms.Form):
 	"""
 	A form that allows user to change their old/forgotten password.
 	"""
-	new_password = forms.CharField(label='New Password', widget=forms.PasswordInput, strip=False,  help_text=password_validation.password_validators_help_text_html())
-	confrim_new_password = forms.CharField(label='Confrim Password', widget=forms.PasswordInput, strip=False)
+	error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+    }
 
-	def clean_confirm_new_password(self):
-		new_password = self.cleaned_data.get('new_password')
-		confrim_new_password = self.cleaned_data('confrim_new_password')
+	new_password = forms.CharField(label='New Password', widget=forms.PasswordInput, strip=False)
+	confrim_password = forms.CharField(label='Confrim Password', widget=forms.PasswordInput, strip=False, help_text=password_validation.password_validators_help_text_html())
 
 	def __init__(self, *args, **kwargs):
-		super(PasswordResetForm, self).__init__(*args, **kwargs)
+		super(UserPasswordResetForm, self).__init__(*args, **kwargs)
 		self.helper = FormHelper()
 		self.helper.form_id = 'resetForm'
 		self.helper.form_method = 'post'
 		self.helper.layout = Layout(
 				PrependedText('new_password', "<span class='glyphicon glyphicon-lock'></span>", active=True),
-				PrependedText('confrim_new_password', "<span class='glyphicon glyphicon-lock'></span>", active=True),
+				PrependedText('confrim_password', "<span class='glyphicon glyphicon-lock'></span>", active=True),
 				FormActions(
 					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
 					),
 			)
+
+	def clean(self):
+		clean_data = super(UserPasswordResetForm, self).clean()
+		password1 = clean_data.get('new_password')
+		password2 = clean_data.get('confrim_password')
+
+		if password1 and password2:
+			if password1 != password2:
+				raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch',)
+		#password_validation.validate_password(password2, self.user)
+		return clean_data
+
 
 
 

@@ -51,11 +51,11 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 	if user is not None and token_generator.check_token(user, token):
 		validlink = True
 		if request.method == 'POST':
-			form = UserPasswordResetForm(request.POST)
+			form = UserPasswordResetForm(user,request.POST)
 			if form.is_valid(): 
 				return HttpResponseRedirect(reverse('accounts:index'))
 		else:
-			form = UserPasswordResetForm()
+			form = UserPasswordResetForm(user)
 	else:
 		form = None
 	context={

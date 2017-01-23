@@ -17,7 +17,6 @@ class TestDataFixture(TestCase):
 		self.client = Client()
 		self.form = LoginAuthenticationForm()
 		self.recovery = AccountRecoveryForm()
-		self.reset = UserPasswordResetForm()
 
 	@classmethod 
 	def setUpTestData(cls):
@@ -28,6 +27,7 @@ class TestDataFixture(TestCase):
 		}
 		cls.user_token = default_token_generator.make_token(cls.user)
 		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
+		cls.reset = UserPasswordResetForm(cls.user)
 
 class TestLoginAuthenticationForm(TestDataFixture):
 	"""
@@ -108,17 +108,16 @@ class TestPasswordResetForm(TestDataFixture):
 		self.assertIs(self.reset.is_valid(), False)
 
 	def test_reset_password_is_bound_and_valid(self):
-		self.reset = UserPasswordResetForm(data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 		self.assertIs(self.reset.is_bound, True)
 		self.assertIs(self.reset.is_valid(), True)
 
 	def test_reset_form_errors(self):
-		self.reset = UserPasswordResetForm(data={'new_password': '', 'confrim_password': ''})
-		self.assertEqual(self.reset['new_password'].errors, ['This field is required.'])
-		self.assertEqual(self.reset['confrim_password'].errors, ['This field is required.'])
+		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'RussianDressing', 'confrim_password': 'RussianRoulette'})
+		self.assertEqual(self.reset.errors, {'__all__': ["The two password fields didn't match."]})
 
 	def test_reset_form_password_validation(self):
-		self.reset = UserPasswordResetForm(data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 		self.assertTrue(self.reset.is_valid())
 		self.assertEqual(self.reset.clean(), {'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 

@@ -62,8 +62,9 @@ class UserPasswordResetForm(forms.Form):
 	new_password = forms.CharField(label='New Password', widget=forms.PasswordInput, strip=False)
 	confrim_password = forms.CharField(label='Confrim Password', widget=forms.PasswordInput, strip=False, help_text=password_validation.password_validators_help_text_html())
 
-	def __init__(self, *args, **kwargs):
+	def __init__(self, user, *args, **kwargs):
 		super(UserPasswordResetForm, self).__init__(*args, **kwargs)
+		self.user = user
 		self.helper = FormHelper()
 		self.helper.form_id = 'resetForm'
 		self.helper.form_method = 'post'
@@ -83,7 +84,7 @@ class UserPasswordResetForm(forms.Form):
 		if password1 and password2:
 			if password1 != password2:
 				raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch',)
-		#password_validation.validate_password(password2, self.user)
+		password_validation.validate_password(password2, self.user)
 		return clean_data
 
 

@@ -2,6 +2,7 @@ from django.forms import ModelForm
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.validators import validate_email
 from django.contrib.auth import password_validation
+from django.contrib.auth.hashers import check_password
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from django import forms
@@ -77,15 +78,27 @@ class UserPasswordResetForm(forms.Form):
 			)
 
 	def clean(self):
-		clean_data = super(UserPasswordResetForm, self).clean()
-		password1 = clean_data.get('new_password')
-		password2 = clean_data.get('confrim_password')
+		cleaned_data = super(UserPasswordResetForm, self).clean()
+		password1 = cleaned_data.get('new_password')
+		password2 = cleaned_data.get('confrim_password')
+		old_password = check_password(password2, self.user.password)
 
-		if password1 and password2:
-			if password1 != password2:
-				raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch',)
-		password_validation.validate_password(password2, self.user)
-		return clean_data
+		if old_password is False:
+			if password1 and password2:
+				if password1 != password2:
+					raise forms.ValidationError(self.error_messages['password_mismatch'], code='password_mismatch',)
+			password_validation.validate_password(password2, self.user)
+			return cleaned_data
+		else:
+			raise forms.ValidationError('There was an error with your password. Please try again.')
+
+	def save(self, commit=True):
+		password =self.cleaned_data['confrim_password']
+		self.user.set_password(password)
+		if commit:
+			self.user.save()
+		return self.user
+
 
 
 

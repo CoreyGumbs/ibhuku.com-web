@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.hashers import check_password
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.urlresolvers import reverse
@@ -120,6 +121,23 @@ class TestPasswordResetForm(TestDataFixture):
 		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
 		self.assertTrue(self.reset.is_valid())
 		self.assertEqual(self.reset.clean(), {'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+
+	def test_reset_password_save(self):
+		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+		self.assertTrue(self.reset.is_valid())
+		self.reset.save()
+		self.assertTrue(check_password('testpassword', self.user.password))
+		
+		#test to see if new password is the same as old password and returns error if true
+		self.reset = UserPasswordResetForm(self.user, data={'new_password': 'testpassword', 'confrim_password': 'testpassword'})
+		self.assertEqual({'__all__': ['There was an error with your password. Please try again.']}, self.reset.errors)
+
+
+
+
+
+
+
 
 
 

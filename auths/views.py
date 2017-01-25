@@ -25,10 +25,6 @@ def AccountRecover(request):
 				user= IbkUser.objects.get(email__iexact=email)
 				token = default_token_generator.make_token(user)
 				if user:
-					profile = Profile.objects.get(user_id=user.id)
-					profile.verified = False
-					profile.verify_key = token
-					profile.save()
 					password_reset_link(user, email, token, request=request)
 					return HttpResponse('thank you. Email sent.')
 			except IbkUser.DoesNotExist:
@@ -44,6 +40,7 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 	try:
 		uid = force_text(urlsafe_base64_decode(uidb64))
 		user = IbkUser.objects.get(pk=uid)
+		profile = Profile.objects.get(user_id=user.id)
 	except (TypeError, ValueError, OverflowError, IbkUser.DoesNotExist):
 		user = None
 		return HttpResponseRedirect(reverse('accounts:index'))
@@ -51,13 +48,15 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 	if user is not None and token_generator.check_token(user, token):
 		validlink = True
 		if request.method == 'POST':
-			form = UserPasswordResetForm(user,request.POST)
-			if form.is_valid(): 
+			form = UserPasswordResetForm(user,request.POST or None)
+			if form.is_valid():
+				reset_password = form.cleaned_data['confrim_password']
+				form.save()
 				return HttpResponseRedirect(reverse('accounts:index'))
 		else:
 			form = UserPasswordResetForm(user)
 	else:
-		form = None
+		form = UserPasswordResetForm()
 	context={
 		'form': form,
 	}

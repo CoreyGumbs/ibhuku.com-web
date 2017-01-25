@@ -1,5 +1,6 @@
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import check_password
 from django.core.urlresolvers import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
@@ -61,7 +62,7 @@ class LoginView(TestDataFixture):
 		response = self.client.post('/auths/login/', {'username':'mctest@test.com', 'password':'password12345'}, follow=True)
 		self.assertRedirects(response, '/accounts/register/')
 
-class AccountRecover(TestDataFixture):
+class TestAccountRecover(TestDataFixture):
 	"""
 	Test Password Reset View
 	"""
@@ -89,7 +90,7 @@ class AccountRecover(TestDataFixture):
 	def test_user_exists(self):
 		response = self.client.post('/auths/recover/', {'email': 'mctest@test.com'})
 
-class AccountResetLinkConfirm(TestDataFixture):
+class TestAccountResetLinkConfirm(TestDataFixture):
 	"""
 	Test Password Link Confirmation View
 	"""

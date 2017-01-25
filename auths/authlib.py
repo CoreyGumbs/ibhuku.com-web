@@ -44,6 +44,8 @@ def password_reset_link(user, email, token, use_https=False, request=None):
 	msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
 	msg.attach_alternative(html_content, "text/html")
 	msg.send()
+		
+
 
 
 

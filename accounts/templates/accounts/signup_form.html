@@ -5,11 +5,7 @@
 {%block account_title%}Sign-Up!{%endblock account_title%}
 {%block account_css%}
 	<link rel="stylesheet" type="text/css" href="{% static 'css/account_styles.css' %}">
-	<script>
-  		window.setTimeout(function(){
-    		window.location.href = "{% url 'auths:login' %}";
-  		}, 3000);
-	</script>
+
 {%endblock account_css%}
 
 {%block account_body%}
@@ -20,6 +16,9 @@
 				<h2>Create Account</h2>
 			</div>
 			{% crispy form form.helper %}
+			<p class="text-center">
+				<small>Already have an account? <a href="{% url 'auths:login' %}">Sign up</a></small>
+			</p>
 		</div>
 		<div class="col-md-4"></div>
 	</div>

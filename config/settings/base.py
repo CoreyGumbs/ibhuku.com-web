@@ -141,7 +141,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-PASSWORD_RESET_TIMEOUT_DAYS = 7
+PASSWORD_RESET_TIMEOUT_DAYS = 1
 
 # EMAIL_HOST = 'smtp.sendgrid.net'
 # EMAIL_PORT = 587

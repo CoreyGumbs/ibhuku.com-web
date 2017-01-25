@@ -9,6 +9,7 @@ from django.conf import settings
 
 from accounts.models import IbkUser, Profile
 from auths.views import AccountRecover, AccountResetLinkConfirm
+from auths.forms import UserPasswordResetForm
 from auths.authlib import ValidateEmail
 
 # Create your tests here.
@@ -118,6 +119,9 @@ class TestAccountResetLinkConfirm(TestDataFixture):
 	def test_reset_link_confirm_user_uidb64_error_redirect(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': b'MXM', 'token': self.user_token}), follow=True)
 		self.assertRedirects(response, '/accounts/register/')
+
+
+
 
 
 

@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_text
 from django.template.response import TemplateResponse
+from django.views.generic.base import View, TemplateView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 
@@ -26,7 +27,7 @@ def AccountRecover(request):
 				token = default_token_generator.make_token(user)
 				if user:
 					password_reset_link(user, email, token, request=request)
-					return HttpResponse('thank you. Email sent.')
+					return HttpResponseRedirect(reverse('auths:recover-done'))
 			except IbkUser.DoesNotExist:
 				pass
 	else:
@@ -50,14 +51,18 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 		if request.method == 'POST':
 			form = UserPasswordResetForm(user,request.POST or None)
 			if form.is_valid():
-				reset_password = form.cleaned_data['confrim_password']
 				form.save()
-				return HttpResponseRedirect(reverse('accounts:index'))
+				return HttpResponseRedirect(reverse('auths:recover-done'))
 		else:
 			form = UserPasswordResetForm(user)
 	else:
-		form = UserPasswordResetForm()
+		validlink = False
+		form = None
 	context={
 		'form': form,
+		'validlink': validlink,
 	}
 	return TemplateResponse(request, 'auths/password_reset_confirm.html', context)
+
+class PasswordResetDone(TemplateView):
+	template_name = 'auths/password_reset_done.html'

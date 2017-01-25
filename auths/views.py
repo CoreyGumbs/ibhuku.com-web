@@ -44,7 +44,6 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 		profile = Profile.objects.get(user_id=user.id)
 	except (TypeError, ValueError, OverflowError, IbkUser.DoesNotExist):
 		user = None
-		return HttpResponseRedirect(reverse('accounts:index'))
 
 	if user is not None and token_generator.check_token(user, token):
 		validlink = True

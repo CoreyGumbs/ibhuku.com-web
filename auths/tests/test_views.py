@@ -89,7 +89,9 @@ class TestAccountRecover(TestDataFixture):
 		self.assertIn('Email:' , str(response.context['form']))
 
 	def test_user_exists(self):
-		response = self.client.post('/auths/recover/', {'email': 'mctest@test.com'})
+		response = self.client.post('/auths/recover/', {'email': 'mctest@test.com'}, follow=True)
+		self.assertRedirects(response, '/auths/recover/done/')
+
 
 class TestAccountResetLinkConfirm(TestDataFixture):
 	"""
@@ -118,7 +120,9 @@ class TestAccountResetLinkConfirm(TestDataFixture):
 
 	def test_reset_link_confirm_user_uidb64_error_redirect(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': b'MXM', 'token': self.user_token}), follow=True)
-		self.assertRedirects(response, '/accounts/register/')
+		html = response.content.decode('utf8')
+		self.assertIs(response.context['form'], None)
+		self.assertIn('Please request a new password reset' ,html)
 
 
 

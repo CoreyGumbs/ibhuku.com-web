@@ -29,7 +29,7 @@ def AccountRecover(request):
 					password_reset_link(user, email, token, request=request)
 					return HttpResponseRedirect(reverse('auths:recover-done'))
 			except IbkUser.DoesNotExist:
-				pass
+				return HttpResponseRedirect(reverse('auths:recover-done'))
 	else:
 		form = AccountRecoveryForm()
 	context = {
@@ -51,7 +51,7 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 			form = UserPasswordResetForm(user,request.POST or None)
 			if form.is_valid():
 				form.save()
-				return HttpResponseRedirect(reverse('auths:recover-done'))
+				return HttpResponseRedirect(reverse('auths:reset-complete'))
 		else:
 			form = UserPasswordResetForm(user)
 	else:
@@ -65,3 +65,6 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 
 class PasswordResetDone(TemplateView):
 	template_name = 'auths/password_reset_done.html'
+
+class PasswordResetComplete(TemplateView):
+	template_name = 'auths/password_reset_complete.html'

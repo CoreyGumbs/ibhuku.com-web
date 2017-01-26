@@ -149,7 +149,7 @@ class TestPasswordResetForm(TestDataFixture):
 		self.assertEqual(
 			{'__all__': ['There was an error with your password. Please try again.']}, 
 			self.reset.errors,
-			msg='Should return error if old password = new passowrd.'
+			msg='Should return error if old password = new password.'
 			)
 
 

@@ -37,6 +37,7 @@ def AccountRecover(request):
 	}
 	return render(request, 'auths/recover.html', context)
 
+@csrf_protect
 def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=default_token_generator):
 	try:
 		uid = force_text(urlsafe_base64_decode(uidb64))

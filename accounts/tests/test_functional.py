@@ -20,7 +20,7 @@ class UserCreateAccountTest(StaticLiveServerTestCase):
 		cls.browser.quit()
 		super(UserCreateAccountTest, cls).tearDownClass()
 
-	def test_user_create_account(self):
+	def test_create_user_account(self):
 		#TestyMcTesty is a history researcher and avid reader
 		#He is told by an associate of a site that he can use as a tool to help him organize his reading and research
 		#Interested, TestyMcTesty decides to check it out. 
@@ -35,12 +35,15 @@ class UserCreateAccountTest(StaticLiveServerTestCase):
 
 		#McTesty says "what the heck".
 		#He decides to fill out the form. He sees the form has 3 fields, they are:
-		#Name (His)
+		
+		#Name
 		user_name = self.browser.find_element_by_name('name')
 		self.assertIn(user_name.get_attribute('placeholder'), 'Name')
+
 		#email
 		user_email = self.browser.find_element_by_name('email')
 		self.assertIn(user_email.get_attribute('placeholder'), 'Email')
+
 		#password
 		user_password = self.browser.find_element_by_name('password')
 		self.assertIn(user_password.get_attribute('placeholder'), 'Password')
@@ -50,7 +53,7 @@ class UserCreateAccountTest(StaticLiveServerTestCase):
 		user_email.send_keys('Mctesty@testy.com')
 		user_password.send_keys('password12345')
 
-		#McTesty sends the data.
+		#McTesty sends the form.
 		self.browser.find_element_by_id('submit-id-submit').click()
 
 		#McTesty recieves a confirmation screen that confirms his registration.

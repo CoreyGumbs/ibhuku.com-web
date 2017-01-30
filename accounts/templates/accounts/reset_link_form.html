@@ -4,8 +4,6 @@
 
 {%block account_title%}Reset Activation Link{%endblock account_title%}
 {%block account_css%}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'css/account_styles.css' %}">
 {%endblock account_css%}
 {%block account_body%}
 	<div class="row">
@@ -14,9 +12,8 @@
 				<h2>Reset Acccount Activation Link</h2>
 			</div>
 			<div class='col-md-12 well lead text-left'>
-				<p>Your link has either expired or there was an error.</p>
 				<p>Getting a new activation link is simple.</p>
-				<p>Just click the button.</p>
+				<p>Enter account email address.</p>
 			</div>
 			{% crispy form form.helper %}
 		</div>

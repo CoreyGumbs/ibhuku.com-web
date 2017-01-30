@@ -5,13 +5,12 @@ from django.core.urlresolvers import reverse, resolve
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.response import TemplateResponse
 from django.views.generic.base import View, TemplateView
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 
 from accounts.models import IbkUser, Profile
-from accounts.accountslib import profile_validation_key, check_profile_validation_key
 from auths.authlib import password_reset_link
 from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, UserPasswordResetForm
 
@@ -52,14 +51,14 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 			form = UserPasswordResetForm(user,request.POST or None)
 			if form.is_valid():
 				form.save()
+				profile.verified = True
+				profile.save()
 				return HttpResponseRedirect(reverse('auths:reset-complete'))
 		else:
 			form = UserPasswordResetForm(user)
 	else:
 		validlink = False
-		form = None
 	context={
-		'form': form,
 		'validlink': validlink,
 	}
 	return TemplateResponse(request, 'auths/password_reset_confirm.html', context)

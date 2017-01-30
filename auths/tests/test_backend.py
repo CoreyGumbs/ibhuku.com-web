@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from django.test import TestCase, Client
 from django.contrib.auth import authenticate
 from django.conf import settings

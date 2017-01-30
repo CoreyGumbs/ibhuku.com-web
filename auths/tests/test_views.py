@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import check_password
@@ -28,8 +29,6 @@ class TestDataFixture(TestCase):
 		cls.user_token = default_token_generator.make_token(cls.user)
 		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
-		cls.profile.verify_key = cls.user_token
-		cls.profile.save()
 
 class LoginView(TestDataFixture):
 	"""

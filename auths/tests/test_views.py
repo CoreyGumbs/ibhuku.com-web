@@ -30,7 +30,7 @@ class TestDataFixture(TestCase):
 		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
 
-class LoginView(TestDataFixture):
+class TestLoginView(TestDataFixture):
 	"""
 	Test Login Authentication View
 	"""
@@ -120,6 +120,7 @@ class TestAccountResetLinkConfirm(TestDataFixture):
 	def test_reset_link_confirm_user_uidb64_error_redirect(self):
 		response = self.client.post(reverse('auths:recover-password', kwargs={'uidb64': b'MXM', 'token': self.user_token}))
 		html = response.content.decode('utf8')
+		self.assertIs(response.context['validlink'], False)
 		self.assertIs(response.context['form'], None)
 		self.assertIn('Please request a new password reset' ,html)
 

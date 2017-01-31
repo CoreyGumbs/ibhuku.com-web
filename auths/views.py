@@ -38,6 +38,7 @@ def AccountRecover(request):
 
 @csrf_protect
 def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=default_token_generator):
+	form = None
 	try:
 		uid = force_text(urlsafe_base64_decode(uidb64))
 		user = IbkUser.objects.get(pk=uid)
@@ -48,7 +49,7 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 	if user is not None and token_generator.check_token(user, token):
 		validlink = True
 		if request.method == 'POST':
-			form = UserPasswordResetForm(user,request.POST or None)
+			form = UserPasswordResetForm(user, request.POST or None)
 			if form.is_valid():
 				form.save()
 				profile.verified = True
@@ -58,8 +59,10 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 			form = UserPasswordResetForm(user)
 	else:
 		validlink = False
+
 	context={
 		'validlink': validlink,
+		'form': form,
 	}
 	return TemplateResponse(request, 'auths/password_reset_confirm.html', context)
 

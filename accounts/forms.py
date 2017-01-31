@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.hashers import make_password
+from django.core.validators import validate_email
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Button, Reset
@@ -25,7 +26,7 @@ class IbkUserSignUpForm(ModelForm):
 	def clean_password(self):
 		password = self.cleaned_data.get('password')
 		if len(password) < 8:
-			raise forms.ValidationError('Please enter at least 8 characters.')
+			raise forms.ValidationError('Password must be at least 8 characters.')
 		else:
 			password_hashed =  make_password(password, salt='jRkSlAw7KZ')
 			return password_hashed
@@ -44,17 +45,16 @@ class IbkUserSignUpForm(ModelForm):
 					),
 			)
 
-class ResetEmailActivationLinkForm(ModelForm):
-	class Meta:
-		model = Profile
-		fields =()
+class ResetActivationLinkForm(forms.Form):
+	email = forms.EmailField(label='Email', max_length=255, required=True)
 
 	def __init__(self, *args, **kwargs):
-		super(ResetEmailActivationLinkForm, self).__init__(*args, **kwargs)
+		super(ResetActivationLinkForm, self).__init__(*args, **kwargs)
 		self.helper = FormHelper()
 		self.helper.form_id = 'resetLinkForm'
 		self.helper.form_method = 'post'
 		self.helper.layout = Layout(
+				PrependedText('email', "<span class='glyphicon glyphicon-envelope'></span>", placeholder="Email", active=True),
 				FormActions(
 					Submit('submit', 'Send Link', css_class ='btn btn-success btn-block'),
 					),

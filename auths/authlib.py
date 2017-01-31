@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """
 Copyright (C) 2017 Corey Gumbs
-AcountsLib or Accounts Library contains helper methods 
-used in the accounts application. These helpers are used mainly
+AuthsLib or Auths Library contains helper methods 
+used in the auths application. These helpers are used mainly
 in the views business logic. 
 """
 from django.conf import settings
@@ -16,9 +16,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
-from accounts.models import Profile
+from accounts.models import IbkUser, Profile
 
-def confirm_account_link(user, email, token, use_https=False, request=None):
+def ValidateEmail(email):
+    try:
+        validate_email(email)
+        return True
+    except ValidationError:
+        return False
+
+
+def password_reset_link(user, email, token, use_https=False, request=None):
 	current_site = get_current_site(request)
 	site_name = current_site.name
 	domain = current_site.domain
@@ -30,9 +38,17 @@ def confirm_account_link(user, email, token, use_https=False, request=None):
 	 	'domain': domain,
 	 	'site_name': site_name,
 	}
-	subject, from_email, to_email = 'Welcome to Ibhuku.com. Confirm your email.', 'Ibhuku Team <noreply@ibhuku.com>', email
-	text_content = render_to_string('emails/registration.txt', context)
-	html_content = render_to_string('emails/registration.html', context)
+	subject, from_email, to_email = 'A password reset was requested at Ibhuku.com', 'Ibhuku Team <noreply@ibhuku.com>', email
+	text_content = render_to_string('email/password_reset_text.txt', context)
+	html_content = render_to_string('email/password_reset_email.html', context)
 	msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
 	msg.attach_alternative(html_content, "text/html")
 	msg.send()
+		
+
+
+
+
+
+
+

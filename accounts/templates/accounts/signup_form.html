@@ -3,17 +3,20 @@
 {% load crispy_forms_tags%}
 
 {%block account_title%}Sign-Up!{%endblock account_title%}
-{%block account_css%}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/account_styles.css' %}">
-{%endblock account_css%}
+{%block account_css%}{%endblock account_css%}
 
 {%block account_body%}
 	<div class="row" id="signup-container">
-		<div class="col-md-6 col-md-offset-3">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
 			<div class="page-header text-info text-center">
 				<h2>Create Account</h2>
 			</div>
 			{% crispy form form.helper %}
+			<p class="text-center">
+				<small>Already have an account? <a href="{% url 'auths:login' %}">Sign up</a></small>
+			</p>
 		</div>
+		<div class="col-md-4"></div>
 	</div>
 {%endblock account_body%}

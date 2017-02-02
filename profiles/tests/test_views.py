@@ -18,6 +18,15 @@ class TestDataFixtures(TestCase):
 
 
 class TestProfileDashboard(TestCase):
-    pass
+    """
+    Test of the Profile Dashboard
+    """
+    def test_profile_dashboard_url(self):
+        response = self.client.get('/profiles/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_profile_dashboard_view(self):
+        response = self.client.get('/profiles/')
+        self.assertEqual(response.resolver_match.func.__name__, 'ProfileDashboardView')
 
 

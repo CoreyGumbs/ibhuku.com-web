@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 # Create your views here.
 def ProfileDashboardView(request):
-	return HttpResponse('works')
+	return render(request, 'profiles/profile_dashboard.html')

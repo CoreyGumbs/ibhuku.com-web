@@ -29,4 +29,13 @@ class TestProfileDashboard(TestCase):
         response = self.client.get('/profiles/')
         self.assertEqual(response.resolver_match.func.__name__, 'ProfileDashboardView')
 
+    def test_profile_dashboard_html(self):
+        response =self.client.get('/profiles/')
+        html = response.content.decode('utf8')
+        self.assertIn('<title>Profile Dashboard</title>', html)
+
+    def test_profile_dashboard_template(self):
+        response = self.client.get('/profiles/')
+        self.assertTemplateUsed(response, 'profiles/profile_dashboard.html')
+
 

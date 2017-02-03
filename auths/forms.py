@@ -15,7 +15,7 @@ from accounts.models import IbkUser, Profile
 
 class LoginAuthenticationForm(AuthenticationForm):
 	"""
-	A form that allows users to login to their accounts.
+	A User Login Form for registered users.
 	"""
 	username = forms.EmailField(label='Email', required=True, widget=forms.TextInput(attrs={'id': 'login_username'}))
 	password = forms.CharField(label='Password', required=True,widget=forms.PasswordInput(attrs={'id': 'login_password'}))

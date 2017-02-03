@@ -1,0 +1,17 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a href="{% url 'accounts:index' %}" class="navbar-brand"> Ibhuku </a>
+		</div>
+		<div>
+			<ul class="nav navbar-nav">
+				<li><a href="{%url 'accounts:register' %}">Sign-Up</a></li>
+				{% if request.user.is_authenticated %} 
+					<li><a href="{%url 'auths:logout' %}">Log Out</a></li> 
+				{%else%}
+					<li><a href="{%url 'auths:login' %}">Login</a></li>
+				{%endif%}
+			</ul>
+		</div>
+	</div>
+</nav>

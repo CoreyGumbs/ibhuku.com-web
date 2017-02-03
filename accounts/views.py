@@ -1,119 +1,87 @@
-import os
-import hashlib
 import datetime
 
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.urls import reverse_lazy, reverse
-from django.core import signing
-from django.core.signing import Signer, TimestampSigner, BadSignature
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.urls import reverse_lazy
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils import timezone
-from django.template.loader import render_to_string
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic.base import TemplateView
-from django.views.generic import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.views.generic.base import View, TemplateView
+from django.views.generic.edit import CreateView
+ 
+from .accountslib import confirm_account_link
 
 from .models import IbkUser, Profile
-from .forms	 import IbkUserSignUpForm, ResetEmailActivationLinkForm
+from .forms	 import IbkUserSignUpForm, ResetActivationLinkForm
 
 # Create your views here.
-class AccountSignUp(CreateView):
+class CreateUserAccountView(CreateView):
 	form_class = IbkUserSignUpForm
 	template_name = 'accounts/signup_form.html'
 	success_url = reverse_lazy('accounts:activation-sent')
 
-	def generate_profile_validation_key(self, key_val):
-		signer = Signer()
-		signed_value = signer.sign(key_val)
-		key_value = ''.join(signed_value.split(':')[1:])
-		return key_value
-
 	def form_valid(self, form):
+		form.instance.name = form.instance.name.replace(' ', '')
 		self.object = form.save()
-		profile = Profile.objects.get(user_id=form.instance.id)
-		profile.verify_key = self.generate_profile_validation_key(form.instance.email)
-		profile.save()
-		user_context = {
-			'name': form.instance.name,
-			'email': form.cleaned_data['email'],
-			'key': profile.verify_key,
-		}
-		subject, from_email, to_email = 'Welcome to Ibhuku.com. Confirm your email.', 'noreply@ibhuku.com', form.cleaned_data['email']
-		text_content = render_to_string('emails/registration.txt', user_context)
-		html_content = render_to_string('emails/registration.html', user_context)
-		msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-		msg.attach_alternative(html_content, "text/html")
-		msg.send()
+		try:
+			self.user = IbkUser.objects.get(email__iexact=form.instance.email)
+			token = default_token_generator.make_token(self.user)
+			if self.user:
+				confirm_account_link(self.user, form.instance.email, token, request=self.request)
+				return HttpResponseRedirect(self.get_success_url())
+		except IbkUser.DoesNotExist:
+			pass
 		return HttpResponseRedirect(self.get_success_url())
 
-def AccountActivation(request, verify_key):
+def LinkActivationView(request, uidb64=None, token=None, token_generator=default_token_generator):
 	try:
-		profile = Profile.objects.get(verify_key=verify_key)
-		signer = Signer()
-		check_key = signer.unsign('{0}:{1}'.format(profile.user.email, profile.verify_key))
-		if check_key == profile.user.email and profile.expire_date > timezone.now():
-			profile.verified = True
-			profile.verify_key = 'expired'
-			profile.save()
-			return HttpResponseRedirect(reverse('accounts:verified'))
-	except ObjectDoesNotExist:
-		try:
-			profile = Profile.objects.get(verify_key='expired')
-			if profile.verify_key == 'expired':
-				return HttpResponseRedirect(reverse('accounts:verified'))
-		except:
-			return HttpResponseRedirect(reverse('accounts:reset-error'))
-	except:
-		return HttpResponseRedirect(reverse('accounts:verified'))
-	return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
+		user = IbkUser.objects.get(pk=force_text(urlsafe_base64_decode(uidb64)))
+		profile = Profile.objects.get(user_id=user.pk)
+	except (TypeError, ValueError, OverflowError, IbkUser.DoesNotExist):
+		user =  None
 
-class ResetLinkActivation(CreateView):
-	form_class = ResetEmailActivationLinkForm
-	template_name = 'accounts/reset_link_form.html'
-	success_url = reverse_lazy('accounts:activation-sent')
+	if user is not None and token_generator.check_token(user, token):
+		validlink = True
+		profile.verified = True
+		profile.save()
+	else:
+		validlink = False
 
-	def generate_profile_validation_key(self, key_val):
-		signer = Signer()
-		signed_value = signer.sign(key_val)
-		key_value = ''.join(signed_value.split(':')[1:])
-		return key_value
+	context = {
+		'validlink': validlink,
+	}
+	return render(request, 'accounts/verified_account.html', context)
 
-	def form_valid(self, form):
-		try:
-			profile = Profile.objects.get(user_id=self.kwargs['user_id'])
-			if profile.verified is True:
-				return HttpResponseRedirect(reverse('accounts:verified'))
-			else:
-				profile.verify_key = self.generate_profile_validation_key(profile.user.email)
-				profile.expire_date = timezone.now() + datetime.timedelta(days=3)
-				profile.save()
-				user_context = {
-					'name': profile.user.name,
-					'email': profile.user.email,
-					'key': profile.verify_key,
-				}
-				subject, from_email, to_email = 'Welcome to Ibhuku.com. Confirm your email.', 'noreply@ibhuku.com', profile.user.email
-				text_content = render_to_string('emails/registration.txt', user_context)
-				html_content = render_to_string('emails/registration.html', user_context)
-				msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-				msg.attach_alternative(html_content, "text/html")
-				msg.send()
-		except ObjectDoesNotExist:
-			return HttpResponseRedirect(reverse('accounts:reset-error'))
-		except:
-			return HttpResponseRedirect(reverse('accounts:link_reset', args=[profile.user_id]))
-		return HttpResponseRedirect(reverse('accounts:activation-sent'))
+def ResetActivationLink(request):
+	if request.method == 'POST':
+		form = ResetActivationLinkForm(request.POST)
+		if form.is_valid():
+			email = form.cleaned_data['email']
+			try:
+				user = IbkUser.objects.get(email__iexact=email)
+				token = default_token_generator.make_token(user)
+				if user:
+					confirm_account_link(user, email, token, request=request)
+					return HttpResponseRedirect(reverse('accounts:activation-sent'))
+			except IbkUser.DoesNotExist:
+				pass
+			return HttpResponseRedirect(reverse('accounts:activation-sent'))
+	else:
+		form = ResetActivationLinkForm()
+	
+	context = {
+		'form': form,
+	}
+	return render(request, 'accounts/reset_link_form.html', context)
 
 class ActivationLinkSentMessage(TemplateView):
 	template_name = 'accounts/activation_sent.html'
 
-class VerifiedAccountMessage(TemplateView):
-	template_name = 'accounts/verified_account.html'
-
-class ResetLinkErrorMessage(TemplateView):
-	template_name = 'accounts/reset_error.html'
+class AccountErrorMessage(TemplateView):
+	template_name = 'accounts/account_error.html'
 
 

@@ -3,8 +3,8 @@ from django.contrib.auth.hashers import check_password
 
 from accounts.models import IbkUser
 
-class EmailLoginBackend(object):
-	def authenticate(self, email=None, password=None):
+class EmailBackend(object):
+	def authenticate(self, email=None, password=None, **kwargs):
 		try:
 			user = IbkUser.objects.get(email=email)
 			if check_password(password, user.password):

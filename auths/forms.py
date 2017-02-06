@@ -1,4 +1,5 @@
 from django.forms import ModelForm
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 from django.core.validators import validate_email
 from django.contrib.auth import password_validation
@@ -13,12 +14,13 @@ from crispy_forms.bootstrap import FormActions, PrependedText
 
 from accounts.models import IbkUser, Profile
 
-class LoginAuthenticationForm(AuthenticationForm):
+class LoginAuthenticationForm(forms.Form):
 	"""
 	A User Login Form for registered users.
 	"""
 	username = forms.EmailField(label='Email', required=True, widget=forms.TextInput(attrs={'id': 'login_username'}))
 	password = forms.CharField(label='Password', required=True,widget=forms.PasswordInput(attrs={'id': 'login_password'}))
+
 
 	def __init__(self, *args, **kwargs):
 		super(LoginAuthenticationForm, self).__init__(*args, **kwargs)
@@ -32,6 +34,21 @@ class LoginAuthenticationForm(AuthenticationForm):
 					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
 					),
 			)
+
+	def clean(self):
+		username = self.cleaned_data.get('username')
+		password = self.cleaned_data.get('password')
+		user = authenticate(username=username, password=password)
+		if not user:
+			raise forms.ValidationError('The username or password you entered are incorrect.')
+		return self.cleaned_data
+
+	def login(self, request):
+		username = self.cleaned_data.get('username')
+		password = self.cleaned_data.get('password')
+		user = authenticate(username=username, password=password)
+		return user
+
 
 class AccountRecoveryForm(forms.Form):
 	"""
@@ -50,8 +67,7 @@ class AccountRecoveryForm(forms.Form):
 					Submit('submit', 'Submit', css_class ='btn btn-success btn-lg btn-block'),
 					),
 			)
-
-
+		
 class UserPasswordResetForm(forms.Form):
 	"""
 	A form that allows user to change their old/forgotten password.

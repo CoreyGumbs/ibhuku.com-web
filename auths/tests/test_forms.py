@@ -67,13 +67,7 @@ class TestLoginAuthenticationForm(TestDataFixture):
 
 	def test_form_incorrect_account_errors(self):
 		response = self.client.post('/auths/login/', {'username': 'testing@whatif.com', 'password': 'runforestrun'})
-		self.assertFormError(
-			response, 
-			'form', 
-			None, 
-			'Please enter a correct email and password. Note that both fields may be case-sensitive.',
-			msg_prefix='Should return wrong account error message'
-			)
+		self.assertFormError(response, 'form', None, 'The username or password you entered are incorrect.', msg_prefix='Should return wrong account error message')
 
 class TestAccountRecoverForm(TestDataFixture):
 	"""

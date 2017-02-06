@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth import authenticate, login
@@ -9,7 +10,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.conf import settings
 
 from accounts.models import IbkUser, Profile
-from auths.views import AccountRecover, AccountResetLinkConfirm
+from auths.views import AccountRecover, AccountResetLinkConfirm, AccountLogin
 from auths.forms import UserPasswordResetForm
 from auths.authlib import ValidateEmail
 
@@ -25,7 +26,7 @@ class TestDataFixture(TestCase):
 
 	@classmethod 
 	def setUpTestData(cls):
-		cls.user = IbkUser.objects.create_user(email = "mctest@test.com", name="McTest McTesty", username="McTestyRocks", password="password12345")
+		cls.user = IbkUser.objects.create_user(email = "mctest@test.com", name="McTestMcTesty", username="McTestyRocks", password="password12345")
 		cls.user_token = default_token_generator.make_token(cls.user)
 		cls.uid = urlsafe_base64_encode(force_bytes(cls.user.pk))
 		cls.profile = Profile.objects.get(user_id=cls.user.id)
@@ -40,7 +41,7 @@ class TestLoginView(TestDataFixture):
 
 	def test_login_view(self):
 		response = self.client.get('/auths/login/')
-		self.assertEqual(response.resolver_match.func.__name__, 'login')
+		self.assertEqual(response.resolver_match.func.__name__, 'AccountLogin')
 
 	def test_login_view_html(self):
 		response = self.client.get('/auths/login/')
@@ -60,7 +61,12 @@ class TestLoginView(TestDataFixture):
 	
 	def test_user_login_view_redirect(self):
 		response = self.client.post('/auths/login/', {'username':'mctest@test.com', 'password':'password12345'}, follow=True)
-		self.assertRedirects(response, '/accounts/register/')
+		self.assertRedirects(response, '/profile/McTestMcTesty')
+
+	def test_invalid_user_login(self):
+		response = self.client.post('/auths/login/', {'username':'john@test.com', 'password':'password12345'})
+		html = response.content.decode('utf8')
+		self.assertIn('The username or password you entered are incorrect.', html) 
 
 class TestAccountRecover(TestDataFixture):
 	"""

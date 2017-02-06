@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_protect
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse, resolve, reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_text
@@ -15,6 +15,22 @@ from auths.authlib import password_reset_link
 from auths.forms import LoginAuthenticationForm, AccountRecoveryForm, UserPasswordResetForm
 
 # Create your views here.
+@csrf_protect
+def AccountLogin(request):
+	form = LoginAuthenticationForm(request.POST or None)
+	username = request.POST.get('username')
+	password = request.POST.get('password')
+	if request.POST and form.is_valid():
+		user = form.login(request)
+		if user:
+			login(request, user)
+			return redirect(reverse_lazy('profile:dashboard', kwargs={'name': request.user.name}))
+
+	context = {
+		'form': form,
+	}
+	return render(request, 'auths/login.html', context)
+
 @csrf_protect
 def AccountRecover(request):
 	if request.method == 'POST':

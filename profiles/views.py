@@ -16,4 +16,7 @@ def ProfileDashboardView(request, name=None):
 @login_required
 def ProfileAvatarUploadView(request, name=None):
 	usr_name = IbkUser.objects.get(name=name)
-	return render(request, 'profiles/profile_avatar_upload.html')
+	context = {
+		'my_name': usr_name,
+	}
+	return render(request, 'profiles/profile_avatar_upload.html', context)

@@ -19,7 +19,7 @@ class TestDataFixtures(TestCase):
 
 class TestProfileDashboard(TestDataFixtures):
     """
-    Test of the Profile Dashboard
+    Test of the Profile Dashboard View.
     """
     def test_profile_dashboard_url(self):
         login = self.client.login(username=self.user.email, password='password12345')
@@ -46,5 +46,22 @@ class TestProfileDashboard(TestDataFixtures):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
         self.assertEqual(response.context['user'].name, 'McTestMcTesty')
+
+class TestAvatarUploadView(TestDataFixtures):
+    """
+    Test of the Avatar Upload View.
+    """
+
+    def test_avatar_upload_view_url(self):
+        login =  self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_avatar_upload_view(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+        self.assertEqual(response.resolver_match.func.__name__, 'ProfileAvatarUploadView')
+
+
 
 

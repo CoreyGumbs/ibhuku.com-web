@@ -79,6 +79,7 @@ def AccountResetLinkConfirm(request, uidb64=None, token=None, token_generator=de
 	context={
 		'validlink': validlink,
 		'form': form,
+		'user': user,
 	}
 	return TemplateResponse(request, 'auths/password_reset_confirm.html', context)
 

@@ -31,6 +31,11 @@ class TestProfileDashboard(TestDataFixtures):
         response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
         self.assertEqual(response.resolver_match.func.__name__, 'ProfileDashboardView')
 
+    def test_profile_dashboard_view_kwargs(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
+        self.assertEqual(response.resolver_match.kwargs, {'name':self.user.name})
+
     def test_profile_dashboard_html(self):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
@@ -61,6 +66,18 @@ class TestAvatarUploadView(TestDataFixtures):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
         self.assertEqual(response.resolver_match.func.__name__, 'ProfileAvatarUploadView')
+
+    def test_avatar_upload_view_kwargs(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+        self.assertEqual(response.resolver_match.kwargs, {'name':self.user.name})
+
+    def test_avatar_upload_view_html(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+        html = response.content.decode('utf8')
+        self.assertIn('<title>Upload Profile Picture</title>', html)
+
 
 
 

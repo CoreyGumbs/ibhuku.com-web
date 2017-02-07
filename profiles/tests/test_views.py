@@ -78,6 +78,12 @@ class TestAvatarUploadView(TestDataFixtures):
         html = response.content.decode('utf8')
         self.assertIn('<title>Upload Profile Picture</title>', html)
 
+    def test_avatar_upload_view_template(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+        self.assertTemplateUsed(response, 'profiles/profile_avatar_upload.html')
+
+
 
 
 

@@ -2,21 +2,17 @@
 {%load staticfiles%}
 {% load crispy_forms_tags%}
 
-{%block profiles_title%}Profile Dashboard{%endblock profiles_title%}
+{%block profiles_title%}Upload Profile Picture{%endblock profiles_title%}
 {%block profiles_css%}
 	
 {%endblock profiles_css%}
 
 {%block profiles_body%}
 	<div class="row" id="signup-container">
-		<div class="col-md-4">
-			<ul>
-				<li><a href="{% url 'profile:avatar-upload' user.name %}">Upload Profile Pic</a></li>
-			</ul>
-		</div>
+		<div class="col-md-4"></div>
 		<div class="col-md-4">
 			<div class="page-header text-info text-center">
-				<h2>Dashboard</h2>
+				<h2>Avatar Upload</h2>
 			</div>
 			<div class="col-md-4"></div>
 		</div>

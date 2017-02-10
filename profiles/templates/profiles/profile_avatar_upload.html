@@ -4,16 +4,17 @@
 
 {%block profiles_title%}Upload Profile Picture{%endblock profiles_title%}
 {%block profiles_css%}
-	
 {%endblock profiles_css%}
 
 {%block profiles_body%}
-	<div class="row" id="signup-container">
+	<div class="row">
 		<div class="col-md-4"></div>
 		<div class="col-md-4">
 			<div class="page-header text-info text-center">
-				<h2>Avatar Upload</h2>
-				<p>Welcome {{my_name.name}}</p>
+
+				<p>
+					{% crispy form form.helper %}
+				</p>
 			</div>
 			<div class="col-md-4"></div>
 		</div>

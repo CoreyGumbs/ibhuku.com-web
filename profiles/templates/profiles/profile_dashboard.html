@@ -2,19 +2,30 @@
 {%load staticfiles%}
 {% load crispy_forms_tags%}
 
-{%block profiles_title%}Profile Dashboard{%endblock profiles_title%}
+{%block profiles_title%}{{user.name}}| Profile| Ibhuku.com{%endblock profiles_title%}
 {%block profiles_css%}
-	
 {%endblock profiles_css%}
 
-{%block profiles_body%}
-	<div class="row" id="signup-container">
-		<div class="col-md-4">
+
+{%block profile_box%} 
+	<div class="container">
+		<div class="col-md-2">
+			<img src="{{profile.avatar}}" alt="user default picture">
+		</div>
+		<div class="col-md-9">
+			<p>
+				{{user.name}}
+
+			</p>
 			<ul>
-				<li><a href="{% url 'profile:avatar-upload' user.name %}">Upload Profile Pic</a></li>
+				<li><a href="{% url 'profile:avatar-upload' profile.user.name %}">Upload Profile Pic</a></li>
 			</ul>
 		</div>
-		<div class="col-md-4">
+	</div>
+{%endblock profile_box%}
+{%block profiles_body%}
+	<div class="row">
+		<div class="col-md-8">
 			<div class="page-header text-info text-center">
 				<h2>Dashboard</h2>
 			</div>

@@ -3,14 +3,14 @@
 		<div class="navbar-header">
 			<a href="{% url 'accounts:index' %}" class="navbar-brand"> Ibhuku </a>
 		</div>
-		<div>
+		<div class="navbar-right">
 			<ul class="nav navbar-nav">
-				<li><a href="{%url 'accounts:register' %}">Sign-Up</a></li>
-				{% if request.user.is_authenticated %} 
+				{% if not request.user.is_authenticated %} 
+					<li><a href="{%url 'accounts:register' %}">Sign-Up</a></li>
+					<li><a href="{%url 'auths:login' %}">Login</a></li> 
+				{%else%}
 					<li><a href="{%url 'profile:dashboard' request.user.name %}">Dashboard</a></li>
 					<li><a href="{%url 'auths:logout' %}">Log Out</a></li> 
-				{%else%}
-					<li><a href="{%url 'auths:login' %}">Login</a></li>
 				{%endif%}
 			</ul>
 		</div>

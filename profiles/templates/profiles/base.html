@@ -4,21 +4,28 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>{%block profiles_title%}{%endblock profiles_title%}</title>
-		<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-		{%block profiles_css%}{%endblock profiles_css%}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/profile_dashboard/dashboard_styles.css' %}">
+		{%block profiles_css%}
+				<!--page specific css files-->
+		{%endblock profiles_css%}
 	</head>
 	<body>
 		{% include 'nav/nav.html' %}
+		<div class="row shadow-effect" id="profile-box">
+			{%block profile_box%}{%endblock profile_box%}
+		</div>
 		<div class="container">
-			<div class="row">
+			
 				<div class="col-md-12">
 					{% block profiles_body %}
 					
 					{% endblock profiles_body %}
 				</div>
-			</div>
+			
 		</div>
+		{% include 'javascript/javascript.html' %}
 		{% include 'footer/footer.html' %}
 	</body>
 </html>

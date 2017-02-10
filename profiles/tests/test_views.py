@@ -40,7 +40,7 @@ class TestProfileDashboard(TestDataFixtures):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
         html = response.content.decode('utf8')
-        self.assertIn('<title>Profile Dashboard</title>', html)
+        self.assertIn(self.user.name, html)
 
     def test_profile_dashboard_template(self):
         login = self.client.login(username=self.user.email, password='password12345')
@@ -86,7 +86,8 @@ class TestAvatarUploadView(TestDataFixtures):
     def test_avatar_upload_view_template_context(self):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
-        self.assertEqual(response.context['my_name'].name, 'McTestMcTesty')
+        self.assertEqual(response.context['profile'].user.name, 'McTestMcTesty')
+
 
 
 

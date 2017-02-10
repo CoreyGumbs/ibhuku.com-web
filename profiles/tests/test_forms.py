@@ -39,3 +39,6 @@ class TestProfileAvatarUploadForm(TestDataFixture):
 
     def test_profile_avatar_upload_from_is_not_valid(self):
         self.assertIs(self.av_upload.is_valid(), False)
+
+    def test_profile_avatar_upload_form_errors(self):
+        pass

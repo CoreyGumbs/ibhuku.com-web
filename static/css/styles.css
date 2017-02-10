@@ -1,12 +1,19 @@
-/* body {
-	background: black url("../images/old_wall.png");
+body {
+	background-color: #fff;
+	padding-top:  50px;
 } 
- */
+
 .btn{
 	text-decoration: none;
 }
 
-.container{
-	margin-top: 100px;
+.container-fluid{
+	margin: auto;
+	width: 960px;
 }
 
+
+
+.navbar-right ul{
+	margin-right:  0px;
+}

@@ -9,14 +9,15 @@
 
 {%block profile_box%} 
 	<div class="container">
-		<div class="col-md-2">
-			<div class="img-container">
-				<a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}">
-					<img src="{{profile.avatar}}" alt="user default picture">
-					<div class="img-after">
-						<p>Upload Image.</p>
+		<div class="col-md-3">
+			<div class="avatar-hovereffect">
+					<img class='img-responsive' src="{{profile.avatar}}" alt="{{profile.user.name}} avatar image">
+					<a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}">
+					<div class="avatar-overlay">
+						<span class='img-icon'><i class="fa fa-camera fa-4x" aria-hidden="true"></i></span>
+						<h2>Upload Image</h2>
 					</div>
-				</a>
+					</a>
 			</div>
 			<div class="img-after">
 				

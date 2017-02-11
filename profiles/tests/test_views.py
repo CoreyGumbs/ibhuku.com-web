@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import tempfile
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 
@@ -87,6 +88,14 @@ class TestAvatarUploadView(TestDataFixtures):
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
         self.assertEqual(response.context['profile'].user.name, 'McTestMcTesty')
+
+    def test_avatar_upload_view_default_image_exists(self):
+        self.assertEqual(str(self.profile.avatar), '/static/images/gilfoyle.jpg')
+
+    def test_avatar_upload_view_default_image_updated(self):
+        login = self.client.login(username=self.user.email, password='password12345')
+        response = self.client.post(reverse('profile:avatar-upload', kwargs={'name': self.user.name}))
+
 
 
 

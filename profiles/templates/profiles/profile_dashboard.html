@@ -10,17 +10,31 @@
 {%block profile_box%} 
 	<div class="container">
 		<div class="col-md-3">
-			<div class="avatar-hovereffect">
+			<div class="avatar-hovereffect" data-toggle="modal" data-target="#avatarUploadModal">
 					<img class='img-responsive' src="{{profile.avatar}}" alt="{{profile.user.name}} avatar image">
-					<a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}">
+					
 					<div class="avatar-overlay">
 						<span class='img-icon'><i class="fa fa-camera fa-4x" aria-hidden="true"></i></span>
 						<h2>Upload Image</h2>
 					</div>
-					</a>
 			</div>
-			<div class="img-after">
-				
+			<div class="modal fade" id="avatarUploadModal" tabindex="-1" role="dialog" aria-lablledby="avatarUploadLabel">
+				<div class="model-dialog modal-sm" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id='avatarUploadLabel'>Upload Image</h4>
+						</div>
+						<div class="modal-body">
+							<p>
+								<img class='img-responsive' src="{{profile.avatar}}" alt="{{profile.user.name}} avatar image">
+							</p>
+							<p>
+								{% crispy avatar_form avatar_form.helper %}
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="col-md-9">

@@ -10,9 +10,11 @@ from accounts.models import IbkUser, Profile
 def ProfileDashboardView(request, name=None):
 	usr_name = IbkUser.objects.get(name=name)
 	usr_profile = Profile.objects.select_related('user').get(user_id=usr_name.id)
+	avatar_form = ProfileAvatarUploadForm(request.FILES, request.POST or None)
 	context = {
 		'user': usr_name,
 		'profile': usr_profile,
+		'avatar_form': avatar_form,
 	}
 	return render(request, 'profiles/profile_dashboard.html', context)
 

@@ -22,7 +22,7 @@
 	overflow: hidden;
 	position: relative;
 	text-align: center;
-	cursor: default;
+	cursor: pointer;
 }
 
 .avatar-hovereffect .avatar-overlay{

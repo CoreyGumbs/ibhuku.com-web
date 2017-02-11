@@ -17,9 +17,9 @@ def ProfileDashboardView(request, name=None):
 	return render(request, 'profiles/profile_dashboard.html', context)
 
 @login_required
-def ProfileAvatarUploadView(request, name=None):
+def ProfileAvatarUploadView(request, name=None, pk=None):
+	usr_profile = Profile.objects.select_related('user').get(user_id=pk)
 	form = ProfileAvatarUploadForm(request.FILES, request.POST or None)
-	usr_profile = Profile.objects.select_related('user').get(user_id=request.user.id)
 	context = {
 		'profile': usr_profile,
 		'form': form,

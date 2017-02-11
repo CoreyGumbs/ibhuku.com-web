@@ -18,7 +18,7 @@
 
 			</p>
 			<ul>
-				<li><a href="{% url 'profile:avatar-upload' profile.user.name %}">Upload Profile Pic</a></li>
+				<li><a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}">Upload Profile Pic</a></li>
 			</ul>
 		</div>
 	</div>

@@ -10,7 +10,17 @@
 {%block profile_box%} 
 	<div class="container">
 		<div class="col-md-2">
-			<a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}"><img src="{{profile.avatar}}" alt="user default picture"></a>
+			<div class="img-container">
+				<a href="{% url 'profile:avatar-upload' profile.user.name profile.user.pk %}">
+					<img src="{{profile.avatar}}" alt="user default picture">
+					<div class="img-after">
+						<p>Upload Image.</p>
+					</div>
+				</a>
+			</div>
+			<div class="img-after">
+				
+			</div>
 		</div>
 		<div class="col-md-9">
 			<p>

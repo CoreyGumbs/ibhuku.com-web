@@ -91,7 +91,7 @@ class TestAvatarUploadView(TestDataFixtures):
         self.assertEqual(response.context['profile'].user.name, 'McTestMcTesty')
 
     def test_avatar_upload_view_default_image_exists(self):
-        self.assertEqual(str(self.profile.avatar), '/static/images/gilfoyle.jpg')
+        self.assertEqual(str(self.profile.avatar), '/static/images/default_avatar.jpg')
 
     def test_avatar_upload_view_default_image_updated(self):
         login = self.client.login(username=self.user.email, password='password12345')

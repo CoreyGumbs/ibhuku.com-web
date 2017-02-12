@@ -42,8 +42,3 @@ class TestProfileAvatarUploadForm(TestDataFixture):
 
     def test_profile_avatar_upload_form_errors(self):
         pass
-
-    def test_profile_avatar_file_upload(self):
-        form = ProfileAvatarUploadForm(data={'avatar': 'static/images/mctest.jpg'})
-        form.save()
-        print(form['user_id'])

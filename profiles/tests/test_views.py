@@ -59,44 +59,10 @@ class TestAvatarUploadView(TestDataFixtures):
     Test of the Avatar Upload View.
     """
 
-    def test_avatar_upload_view_url(self):
-        login =  self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_avatar_upload_view(self):
+    def test_avatar_upload_view_redirection(self): 
         login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        self.assertEqual(response.resolver_match.func.__name__, 'ProfileAvatarUploadView')
-
-    def test_avatar_upload_view_kwargs(self):
-        login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        self.assertEqual(response.resolver_match.kwargs, {'pk': '1', 'name': 'McTestMcTesty'})
-
-    def test_avatar_upload_view_html(self):
-        login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        html = response.content.decode('utf8')
-        self.assertIn('<title>Upload Profile Picture</title>', html)
-
-    def test_avatar_upload_view_template(self):
-        login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        self.assertTemplateUsed(response, 'profiles/profile_avatar_upload.html')
-
-    def test_avatar_upload_view_template_context(self):
-        login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        self.assertEqual(response.context['profile'].user.name, 'McTestMcTesty')
-
-    def test_avatar_upload_view_default_image_exists(self):
-        self.assertEqual(str(self.profile.avatar), '/static/images/default_avatar.jpg')
-
-    def test_avatar_upload_view_default_image_updated(self):
-        login = self.client.login(username=self.user.email, password='password12345')
-        response = self.client.get(reverse('profile:avatar-upload', kwargs={'name': self.user.name,'pk': self.user.id}))
-        print(self.profile.avatar)   
+        response = self.client.post(reverse('profile:avatar-upload',kwargs={'name': self.user.name}))
+        self.assertEqual(response.status_code, 302)
 
 
 

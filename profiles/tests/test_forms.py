@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-from django.test import TestCase, Client
+import tempfile
+from django.test import TestCase, Client, RequestFactory
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 from accounts.models import IbkUser, Profile
@@ -12,11 +14,13 @@ class TestDataFixture(TestCase):
     """
     def setUp(self):
         self.client = Client()
+        self.factory = RequestFactory()
         self.av_upload =  ProfileAvatarUploadForm()
 
     @classmethod 
     def setUpTestData(cls):
         cls.user = IbkUser.objects.create_user(email = "mctest@test.com", name="McTestMcTesty", username="McTestyRocks", password="password12345")
+        cls.profile = Profile.objects.get(user_id=cls.user.id)
         cls.data = {
             'name': cls.user.name,
         }
@@ -34,11 +38,12 @@ class TestProfileAvatarUploadForm(TestDataFixture):
         self.assertEqual(self.av_upload.is_bound, True)
 
     def test_profile_avatar_upload_form_is_valid(self):
-        self.av_upload = ProfileAvatarUploadForm(data=self.data)
+        self.av_upload = ProfileAvatarUploadForm(data={'avatar': 'fake_img.jpg'})
         self.assertIs(self.av_upload.is_valid(), True)
 
     def test_profile_avatar_upload_from_is_not_valid(self):
         self.assertIs(self.av_upload.is_valid(), False)
 
-    def test_profile_avatar_upload_form_errors(self):
+    def test_profile_avatar_upload_form_passes_data(self):
         pass
+

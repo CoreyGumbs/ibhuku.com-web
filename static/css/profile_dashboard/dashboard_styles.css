@@ -10,9 +10,9 @@
 	background-color: #F9F9F9;
 }
 
-#profile-box img{
-	width:  100%;
-	height: 100%;
+.main-image{
+	width:  200px;
+	height:  200px;	
 }
 
 .avatar-hovereffect{
@@ -35,7 +35,6 @@
 	opacity: 0;
 	background-color: rgba(0,0,0,0.4);
 	color: #fff;
-	border-radius: 5px;
 	-webkit-transition:all .4s ease-in-out;
 	transition:all .4s ease-in-out;
 }

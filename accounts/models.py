@@ -14,7 +14,7 @@ from .managers import UserManager
 
 
 def user_directory_path(instance, filename):
-	return 'useraccounts/user_%s/%s' % (instance.ibkuser.id, filename)
+	return 'useraccounts/user_{0}/{1}'.format(instance.user_id, filename)
 
 def get_account_valid_link_expire():
 	return timezone.now() + timedelta(days=3)

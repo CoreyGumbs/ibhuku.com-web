@@ -10,12 +10,12 @@ from accounts.models import IbkUser, Profile
 
 
 class ProfileAvatarUploadForm(ModelForm):
+
 	class Meta:
 		model = Profile
 		fields = ['avatar']
-		labels = {
-			'avatar': 'Upload Image'
-		}
+		exclude =['user_id', 'bio', 'location', 'verified', 'verify_key', 'expire_date']
+		
 
 	def __init__(self, *args, **kwargs):
 		super(ProfileAvatarUploadForm, self).__init__(*args, **kwargs)

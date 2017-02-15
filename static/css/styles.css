@@ -15,3 +15,34 @@ body {
 .navbar-right ul{
 	margin-right:  0px;
 }
+
+.ibk-messages{
+	height: 35px;
+	text-align: center;
+}
+
+.message-success{
+	background-color: #2ECC71;
+	color:  white;
+}
+
+.message-warning{
+	background-color: #E67E22;
+	color: white;
+}
+
+.message-error {
+	background-color: #E74C3C;
+	color: white;
+}
+
+.messages{
+	height: 35px;
+	padding: 0;
+	list-style-type: none;
+}
+
+.messages li {
+	padding: 10px;
+	font-size: 20px;
+}

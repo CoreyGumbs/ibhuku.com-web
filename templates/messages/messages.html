@@ -1,11 +1,11 @@
-<div class="row">
-    <div class="col-md-12">
-        <div class="container">
-            {% if messages %}
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            {% endif %}
-        </div>
-    </div>
+{% if messages %}
+<div class="row ibk-messages">
+	{% for message in messages %}
+		<div {% if message.tags %}class="col-md-12 {{ message.tags }}"{%else%}class="col-md-12"{% endif %}>
+		    <ul class="messages">
+		        <li>{{ message }}</li> 
+		    </ul>
+		</div>
+	{% endfor %}
 </div>
+{% endif %}

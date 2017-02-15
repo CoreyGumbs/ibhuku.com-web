@@ -33,9 +33,10 @@ def ProfileAvatarUploadView(request, name):
 			try:
 				profile.avatar = request.FILES['avatar']
 				profile.save()
-				messages.success(request, 'Your password was updated successfully!', extra_tags='alert')
+				messages.success(request, 'Your avatar was updated successfully!', extra_tags='message-success')
 				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
 			except KeyError:
+				messages.error(request, 'No avatar was uploaded. Please try again.', extra_tags='message-error')
 				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
 	else:
 		return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))

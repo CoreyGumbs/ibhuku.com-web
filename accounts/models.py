@@ -7,8 +7,9 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.core.files.storage import default_storage
 
 from .managers import UserManager
 
@@ -63,6 +64,7 @@ class IbkUser(AbstractBaseUser, PermissionsMixin):
 		else:
 			return self.name
 
+
 class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	bio =  models.TextField(_('bio'),max_length=500, blank=True)
@@ -92,3 +94,8 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+@receiver(pre_save, sender=Profile)
+def delete_old_avatar_file_from_system(sender, instance, **kwargs):
+	image = Profile.objects.get(id=instance.id)
+	default_storage.delete(image.avatar.path)

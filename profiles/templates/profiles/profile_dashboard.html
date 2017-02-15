@@ -11,7 +11,7 @@
 	<div class="container">
 		<div class="col-md-3 col-xs-2">
 			<div class="avatar-hovereffect" data-toggle="modal" data-target="#avatarModal">
-				<img class='main-image img-responsive' src="{{profile.avatar.url}}" alt="{{profile.user.name}} avatar image">
+				<img class='main-image img-responsive' src="{{profile.avatar.url}}" alt="{{profile.user.name}} avatar image" width='200' height='200'>
 				<div class="avatar-overlay">
 					<span class='img-icon'><i class="fa fa-camera fa-4x" aria-hidden="true"></i></span>
 					<h2>Upload Image</h2>
@@ -26,7 +26,7 @@
 						</div>
 						<div class="modal-body">
 							<div class="avmodal-img">
-								<img class='img-responsive' src="{{profile.avatar.url}}" alt="{{profile.user.name}} avatar image">
+								<img class='img-responsive' src="{{profile.avatar.url}}" alt="{{profile.user.name}} avatar image" width="300" height="300">
 							</div>
 							<div class="avmodal-form">
 								{% crispy avatar_form avatar_form.helper %}

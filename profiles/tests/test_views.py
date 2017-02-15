@@ -56,6 +56,7 @@ class TestProfileDashboard(TestDataFixtures):
         response = self.client.get(reverse('profile:dashboard', kwargs={'name': self.user.name}))
         self.assertEqual(response.context['user'].name, 'McTestMcTesty')
 
+
 class TestAvatarUploadView(TestDataFixtures):
     """
     Test of the Avatar Upload View.

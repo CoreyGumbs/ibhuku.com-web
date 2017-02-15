@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.core.files.storage import default_storage
 
 from profiles.forms import ProfileAvatarUploadForm
 from accounts.models import IbkUser, Profile
@@ -28,9 +29,13 @@ def ProfileAvatarUploadView(request, name):
 		form = ProfileAvatarUploadForm(request.FILES, request.POST, instance=usr_profile)
 		if form.is_valid():
 			profile = form.save(commit=False)
-			profile.avatar = request.FILES['avatar']
-			profile.save()
-			return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
+			try:
+				default_storage.delete(profile.avatar.path)
+				profile.avatar = request.FILES['avatar']
+				profile.save()
+				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
+			except KeyError:
+				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
 	else:
 		return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
 

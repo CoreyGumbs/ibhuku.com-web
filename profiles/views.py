@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
+from django.contrib import messages
 
 from profiles.forms import ProfileAvatarUploadForm
 from accounts.models import IbkUser, Profile
@@ -32,6 +33,7 @@ def ProfileAvatarUploadView(request, name):
 			try:
 				profile.avatar = request.FILES['avatar']
 				profile.save()
+				messages.success(request, 'Your password was updated successfully!', extra_tags='alert')
 				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
 			except KeyError:
 				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))

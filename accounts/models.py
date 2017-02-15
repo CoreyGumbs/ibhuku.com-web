@@ -69,7 +69,7 @@ class Profile(models.Model):
 	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 	bio =  models.TextField(_('bio'),max_length=500, blank=True)
 	location = models.CharField(_('location'), max_length=50, blank=True)
-	avatar = models.ImageField(upload_to=user_directory_path, default='/static/images/default_avatar.jpg',  null=True, blank=True) 
+	avatar = models.ImageField(upload_to=user_directory_path, default='default_avatar.jpg',  null=True, blank=True) 
 	verified = models.BooleanField(_('verified'), default=False)
 	verify_key = models.CharField(_('key'), max_length=250, blank=False)
 	expire_date = models.DateTimeField(_('expire date'), default=get_account_valid_link_expire)
@@ -86,16 +86,3 @@ class Profile(models.Model):
 	def __str__(self):
 		return self.user.get_full_name()
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-@receiver(pre_save, sender=Profile)
-def delete_old_avatar_file_from_system(sender, instance, **kwargs):
-	image = Profile.objects.get(id=instance.id)
-	default_storage.delete(image.avatar.path)

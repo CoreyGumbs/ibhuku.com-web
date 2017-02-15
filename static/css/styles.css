@@ -21,6 +21,17 @@ body {
 	text-align: center;
 }
 
+.messages{
+	height: 35px;
+	padding: 0;
+	list-style-type: none;
+}
+
+.messages li {
+	padding: 10px;
+	font-size: 20px;
+}
+
 .message-success{
 	background-color: #2ECC71;
 	color:  white;
@@ -34,15 +45,4 @@ body {
 .message-error {
 	background-color: #E74C3C;
 	color: white;
-}
-
-.messages{
-	height: 35px;
-	padding: 0;
-	list-style-type: none;
-}
-
-.messages li {
-	padding: 10px;
-	font-size: 20px;
 }

@@ -7,7 +7,11 @@ from accounts.models import IbkUser, Profile
 
 @receiver(pre_save, sender=Profile, dispatch_uid='delete_old_avatar_file_from_system')
 def delete_old_avatar_file_from_system(sender, instance, **kwargs):
-	default_img = 'default_avatar.jpg'
-	if instance.avatar != default_img:
-		image = Profile.objects.get(id=instance.id)
-		default_storage.delete(image.avatar.path)
+	try:
+		image = Profile.objects.get(pk=instance.pk)
+		if image.avatar.path.endswith('default_avatar.jpg'):
+			pass
+		else:
+			default_storage.delete(image.avatar.path)
+	except Profile.DoesNotExist:
+		pass

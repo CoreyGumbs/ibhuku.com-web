@@ -88,7 +88,7 @@ class TestAvatarUploadView(TestDataFixtures):
         temp_img = tempfile.NamedTemporaryFile()
         login = self.client.login(username=self.user.email, password='password12345')
         response = self.client.put(reverse('profile:avatar-upload',kwargs={'name': self.user.name}))
-        print(response)
+       
 
 
 

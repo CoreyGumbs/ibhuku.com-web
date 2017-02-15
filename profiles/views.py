@@ -30,7 +30,6 @@ def ProfileAvatarUploadView(request, name):
 		if form.is_valid():
 			profile = form.save(commit=False)
 			try:
-				default_storage.delete(profile.avatar.path)
 				profile.avatar = request.FILES['avatar']
 				profile.save()
 				return HttpResponseRedirect(reverse('profile:dashboard', kwargs={'name': name}))
